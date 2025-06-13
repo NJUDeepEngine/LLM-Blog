@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>a1-doc | LLM-Assignment-Doc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Task 1: MalMul with multi-head variant在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：  A1：一个 3D 的输入张量，形状为 [batch_size, seq_len, hidden_size]，batch_size 表示序列的数量，seqlen 表示一个序列的最大长度，hidden_size 表示序列中每一个 token 拥有的维度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="a1-doc">
+<meta property="og:url" content="https://big-trex.github.io/2025/06/13/a1-doc/index.html">
+<meta property="og:site_name" content="LLM-Assignment-Doc">
+<meta property="og:description" content="Task 1: MalMul with multi-head variant在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：  A1：一个 3D 的输入张量，形状为 [batch_size, seq_len, hidden_size]，batch_size 表示序列的数量，seqlen 表示一个序列的最大长度，hidden_size 表示序列中每一个 token 拥有的维度">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-06-13T15:38:54.000Z">
+<meta property="article:modified_time" content="2025-06-13T15:39:34.622Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/LLM-Blog/atom.xml" title="LLM-Assignment-Doc" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/LLM-Blog/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/LLM-Blog/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/LLM-Blog/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/LLM-Blog/" id="logo">LLM-Assignment-Doc</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/LLM-Blog/">Home</a>
+        
+          <a class="main-nav-link" href="/LLM-Blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/LLM-Blog/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://big-trex.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-a1-doc" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/LLM-Blog/2025/06/13/a1-doc/" class="article-date">
+  <time class="dt-published" datetime="2025-06-13T15:38:54.000Z" itemprop="datePublished">2025-06-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      a1-doc
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h4 id="Task-1-MalMul-with-multi-head-variant"><a href="#Task-1-MalMul-with-multi-head-variant" class="headerlink" title="Task 1: MalMul with multi-head variant"></a>Task 1: MalMul with multi-head variant</h4><p>在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：</p>
+<ul>
+<li><code>A1</code>：一个 3D 的输入张量，形状为 <code>[batch_size, seq_len, hidden_size]</code>，<code>batch_size</code> 表示序列的数量，<code>seqlen</code> 表示一个序列的最大长度，<code>hidden_size</code> 表示序列中每一个 <code>token</code> 拥有的维度。我们简写 <code>A1</code> 的形状为 <code>[b, s, h]</code>。</li>
+<li><code>W1</code>：一个 2D 的权重张量，形状为 <code>[hidden_size, embed_size]</code>，它表示一个投影矩阵，将任何行向量从 <code>hidden_size</code>-dim 投影到 <code>embed_size</code>-dim。我们简写 <code>W1</code> 的形状为 <code>[h, e]</code>。</li>
+</ul>
+<p>朴素的矩阵乘法仅对 <code>A1</code> 中 <code>batch_size</code> 维度，针对每个序列索引i，都执行 <code>O1[i] = A1[i] @ W1</code> 计算，从而得到形状为 <code>[b, s, e]</code> 的张量 O1。</p>
+<p>在多头矩阵乘法中，我们首先将输入张量 <code>A1</code> 和权重张量 <code>W1</code> 的 <code>h</code> 维度均分为 <code>num_heads</code> 个子维度（记为 <code>nh</code>，表示头的数量），由此得到形状为 <code>[b, s, nh, hd]</code> 的四维张量 <code>A2</code> 和形状为 <code>[nh, hd, e]</code> 的三维张量 <code>W2</code>。接下来，对于 <code>A2</code> 中 <code>batch_size</code> 维度下的每个序列，遍历其 <code>num_heads</code> 维度上的每个 <code>[s, hd]</code> 矩阵，并将其与 W2 中 <code>num_heads</code> 维度下对应的 <code>[hd, e]</code> 矩阵进行乘法运算。通过多头并行计算，最终输出一个形状为 <code>[b, s, nh, e]</code> 的四维张量 <code>O2</code>。</p>
+<h5 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task1</strong> 的部分，实现上述多头矩阵乘法的逻辑，输入张量 <code>A1</code> 和 <code>W1</code>，返回计算值 <code>O2</code>。</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ol>
+<li>输入的张量是 A1 和 W1，你需要自己将其转换为 A2 和 W2 再进行计算，请注意 torch 中 <code>reshape</code>, <code>view</code>, <code>transpose</code>, <code>permute</code>等函数的用法和区别。</li>
+<li>虽然逻辑上矩阵的乘法是用遍历进行计算的，但请勿使用 for 循环的方式进行实现，请自行查阅 pytorch 的计算函数，如 <code>@</code>, <code>torch.bmm</code> , <code>torch.mm</code> , <code>torch.matmul</code> , <code>torch.einsum</code> 等。</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>[!NOTE]</p>
+<ol>
+<li>所有输入张量均在同一设备（CPU 或 CUDA）上从标准正态分布 N (0, 1) 随机初始化，具有相同的数据类型（float32、float16 或 bfloat16），并且在所有测试用例中均未设置 <code>require_grad</code>；</li>
+<li>在所有测试用例中，hidden_size 均会被保证能被 num_heads 整除。</li>
+</ol>
+</blockquote>
+<h4 id="Task-2-MalMul-with-importance"><a href="#Task-2-MalMul-with-importance" class="headerlink" title="Task 2: MalMul with importance"></a>Task 2: MalMul with importance</h4><p>在多头矩阵乘法的基础上，我们引入一个表示“重要性”的概率张量 <code>P</code>，其形状为 <code>[b, s]</code>。P 中的每个元素表示 <code>A1</code> 中对应位置的元素的重要程度。基于这个重要性概率，我们的目标是只对每个序列中的 “重要” 元素执行矩阵乘法运算。这些重要元素总共有<code>total_important_seq_len</code> 个，简记为 <code>t</code>，其计算结果会被收集到输出张量 <code>O3</code> 中，其形状为 <code>[t, nh, e]</code>。</p>
+<p>为了精确界定 “重要” 元素的范围，我们提供两个可选参数：</p>
+<ol>
+<li><code>top_p</code>：取值范围为 <code>[0., 1.]</code> 的浮点数。只有概率值大于或等于 <code>top_p</code> 的元素才被视为 “重要” 元素，默认值为 <code>1.0</code>。</li>
+<li><code>top_k</code>：取值范围为 <code>[1, ..., seq_len]</code> 的整数。对于批次中的每个序列，只将概率最高的 <code>top_k</code> 个元素视为 “重要” 元素。如果未设置 <code>top_k</code>（默认值为 <code>None</code>），则等价于 <code>top_k = seq_len</code>。</li>
+</ol>
+<p>注意，必须同时满足上述两点的元素才是重要元素。</p>
+<h5 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task2</strong> 的部分，实现上述重要性乘法。首先，你需要根据 <code>top_p</code> 和 <code>top_k</code> 的值，从 <code>A1</code> 中挑选出“重要”的元素，组成 <code>[t, h]</code> 的张量 <code>A3</code>，再仿造 <strong>Task1</strong> 中的多头矩阵乘法，输出 <code>[t, nh, e]</code> 的张量 <code>O3</code>。</p>
+<blockquote>
+<p>[!TIP]</p>
+<p>可以使用 <code>torch.topk</code> 计算 <code>topk</code> 个重要元素。</p>
+</blockquote>
+<blockquote>
+<p>[!NOTE]</p>
+<p>在所有测试用例中，<code>top_p</code> 和 <code>top_k</code> 参数均会被保证在各自有效范围内取值。</p>
+</blockquote>
+<h4 id="Task-3-MalMul-with-grad"><a href="#Task-3-MalMul-with-grad" class="headerlink" title="Task 3: MalMul with grad"></a>Task 3: MalMul with grad</h4><p>此外，如果提供了输出张量的可选梯度（记为 <code>dO3</code>，其形状与 <code>O3</code> 相同），我们还需要计算输入张量的梯度（记为 <code>dA1</code>，形状与 <code>A1</code> 相同）和权重张量的梯度（记为 <code>dW1</code>，形状与 <code>W1</code> 相同）。若未提供 <code>dO3</code>，则 <code>dA1</code> 和 <code>dW1</code> 均返回 <code>None</code>。</p>
+<h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task3</strong> 的部分，请参考 <strong>A0</strong> 中介绍的两种求梯度的方式，返回 <code>A1</code> 和 <code>W1</code> 的梯度。</p>
+<blockquote>
+<p>[!NOTE]</p>
+<ol>
+<li>若未提供 <code>grad_output</code> 参数，应避免计算梯度以提高效率并节省内存。</li>
+<li>若提供了 <code>grad_output</code> 参数，可使用 PyTorch 的自动求导机制计算梯度，但需注意潜在的副作用，这些副作用可能会在测试中被测试。</li>
+</ol>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://big-trex.github.io/2025/06/13/a1-doc/" data-id="cmbuz4p3d000020tkerns24rf" data-title="a1-doc" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/LLM-Blog/2025/06/03/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/LLM-Blog/archives/2025/06/">June 2025</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/LLM-Blog/2025/06/13/a1-doc/">a1-doc</a>
+          </li>
+        
+          <li>
+            <a href="/LLM-Blog/2025/06/03/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2025 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/LLM-Blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/LLM-Blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/LLM-Blog/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/LLM-Blog/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/LLM-Blog/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
