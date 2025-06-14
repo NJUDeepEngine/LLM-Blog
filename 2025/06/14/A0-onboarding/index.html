@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LLM-Blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LLM-Blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LLM-Blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/LLM-Blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LLM-Blog/css/main.css">
+
+
+<link rel="stylesheet" href="/LLM-Blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"big-trex.github.io","root":"/LLM-Blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。 Environment SetupOption 1: Local Setup Python: 3.10 或更高版本   Packages: 推荐通过以下命令安装所有必要的依赖项：  1pip install -r requirem">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A0 onboarding">
+<meta property="og:url" content="https://big-trex.github.io/2025/06/14/A0-onboarding/index.html">
+<meta property="og:site_name" content="LLM-Assignment-Doc">
+<meta property="og:description" content="本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。 Environment SetupOption 1: Local Setup Python: 3.10 或更高版本   Packages: 推荐通过以下命令安装所有必要的依赖项：  1pip install -r requirem">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-06-14T08:54:20.000Z">
+<meta property="article:modified_time" content="2025-06-14T14:34:29.977Z">
+<meta property="article:author" content="DeepEngine">
+<meta property="article:tag" content="Environment">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://big-trex.github.io/2025/06/14/A0-onboarding/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>A0 onboarding | LLM-Assignment-Doc</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LLM-Blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LLM-Assignment-Doc</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LLM-Blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LLM-Blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LLM-Blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/14/A0-onboarding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
+      <meta itemprop="name" content="DeepEngine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LLM-Assignment-Doc">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          A0 onboarding
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-06-14 16:54:20 / 修改时间：22:34:29" itemprop="dateCreated datePublished" datetime="2025-06-14T16:54:20+08:00">2025-06-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LLM-Blog/categories/Assignment/" itemprop="url" rel="index"><span itemprop="name">Assignment</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。</p>
+<h1 id="Environment-Setup"><a href="#Environment-Setup" class="headerlink" title="Environment Setup"></a>Environment Setup</h1><h2 id="Option-1-Local-Setup"><a href="#Option-1-Local-Setup" class="headerlink" title="Option 1: Local Setup"></a>Option 1: Local Setup</h2><ul>
+<li><strong>Python</strong>: 3.10 或更高版本  </li>
+<li><strong>Packages</strong>: 推荐通过以下命令安装所有必要的依赖项：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure></li>
+<li><strong>Optional</strong>: 建议使用 Nvidia GPU 并安装 CUDA 12.0 或更高版本 ，否则某些功能可能无法正常运行（我们会尽最大努力确保硬件差异不会影响你的评分）。</li>
+</ul>
+<div class="note info">
+            <p><strong>注意</strong>：不同作业的 requirements.txt 可能略有差异</p>
+          </div>
+
+<h2 id="Option-2-Docker-Setup"><a href="#Option-2-Docker-Setup" class="headerlink" title="Option 2: Docker Setup"></a>Option 2: Docker Setup</h2><p>强烈建议使用来自 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/index.html">Nvidia PyTorch Release</a> 的 Docker 镜像（例如 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-23-10.html#rel-23-10">23.10</a> 或更新的版本）作为基础环境，以避免依赖冲突。</p>
+<p>TODO: 完善</p>
+<h1 id="Code-and-Debug"><a href="#Code-and-Debug" class="headerlink" title="Code and Debug"></a>Code and Debug</h1><h2 id="Coding"><a href="#Coding" class="headerlink" title="Coding"></a>Coding</h2><p>所有完成 Tasks 所需的文件都位于 <code>src/</code> 目录下，该目录是<strong>唯一</strong>会被作为 Python 模块导入的目录。因此，你需要注意以下几点：</p>
+<ul>
+<li><code>__init__.py</code> 文件对于 Python 模块来说是必不可少的，我们已经在 <code>src/</code> 中为你初始化好了所有必要的 <code>__init__.py</code> 文件，因此如果你出于个人目的需要修改它们，请务必小心。</li>
+<li>如果你有其他需要在模块内部导入的文件（例如 <code>utils.py</code>），请确保它们也都放在 <code>src/</code> 目录下，并使用相对导入方式，例如：<code>from .utils import *，from .common.utils import ... </code> 等。</li>
+</ul>
+<h3 id="TODO-Tasks-in-A0"><a href="#TODO-Tasks-in-A0" class="headerlink" title="TODO: Tasks in A0"></a>TODO: Tasks in A0</h3><p>your task in a0</p>
+<h2 id="Debugging"><a href="#Debugging" class="headerlink" title="Debugging"></a>Debugging</h2><p>以下内容用于帮助你调试和 debug：</p>
+<h3 id="Naive-Debug-Mode"><a href="#Naive-Debug-Mode" class="headerlink" title="Naive Debug Mode"></a>Naive Debug Mode</h3><ul>
+<li>我们会在 <code>test_toy.py</code> 中提供一些带有明确答案的测试用例，这对你是可见的。</li>
+<li>建议在提交前，先在自己的机器上确保代码正确运行，可以使用以下命令进行测试：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pytest test_toy.py</span><br></pre></td></tr></table></figure>
+<ul>
+<li>你可以根据自己的调试需求自由修改 <code>test_toy.py</code> 文件，我们不会使用它（以及下面提到的 <code>test_with_ref.py</code>）来为你的代码打分。</li>
+</ul>
+<h3 id="Deep-Debug-Mode"><a href="#Deep-Debug-Mode" class="headerlink" title="Deep Debug Mode"></a>Deep Debug Mode</h3><div class="note warning">
+            <p><strong>注意</strong>: <code>test_toy.py</code> 和 <code>test_with_ref.py</code> 中的测试<strong>仅用于调试目的</strong>，它们可能<strong>并不代表</strong>我们在评分时使用的 <code>test_score.py</code> 中的实际测试用例。因此，请特别注意处理不同情况，尤其是一些 <strong>edge cases</strong>。</p>
+          </div>
+
+<h1 id="Submission"><a href="#Submission" class="headerlink" title="Submission"></a>Submission</h1><ul>
+<li>你需要通过 <code>git commit</code> 和 <code>git push</code> 将作业提交到该私有仓库的 <strong><code>main</code> 分支</strong>，包含作业要求的指定源文件，并确保在 <strong>hard deadline</strong> 之前完成提交，否则 <strong>逾期作业将被自动拒收</strong>。</li>
+<li>尽量 <strong>不要推送不必要的文件</strong>，尤其是像图片这样的大文件到仓库中。</li>
+<li>如果你因为一些特殊问题错过了截止时间，请直接联系老师（见 <a href="#Contact">Contact</a>）。</li>
+</ul>
+<div class="note info">
+            <p>我们会尽可能频繁地对你的中间提交进行预测试，以用于最终提交的评分参考。<br>每次预测试后，我们<strong>只会提供 score feedback</strong>（见 <a href="#Feedback">Feedback</a> 部分），以便你在 <strong>ddl</strong> 之前改进代码，争取更高的分数。</p>
+          </div>
+
+<h1 id="Scoring"><a href="#Scoring" class="headerlink" title="Scoring"></a>Scoring</h1><p>每个作业将根据评分范围 0~100 分进行评定。我们会下载你的代码，并通过运行 <code>test_script.sh</code> 脚本来执行 <code>test_score.py</code> 文件（该文件对你来说是不可见的空文件），在我们的本地机器上导入 Tasks 中指定的文件并运行一些测试用例。</p>
+<ul>
+<li>如果你在可选时间限制（optional time limit）内通过了所有测试，你将获得最高分 100 分。</li>
+<li>如果你在可选时间限制内未通过任何测试，或者程序运行出现异常，你将获得最低分 0 分。</li>
+<li>如果你在可选时间限制内只通过了部分测试，则你将获得介于 0~100 分 之间的分数，该分数是你通过的所有测试用例所对应分值的总和，具体得分标准见下表。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Score</th>
+<th>Other Info</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Task1 - Case1</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case2</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case3</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case4</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case5</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Total</td>
+<td>100</td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="Feedback"><a href="#Feedback" class="headerlink" title="Feedback"></a>Feedback</h1><p>在评分完成后，我们会将你的得分情况以一个表格的形式写入一个新文件 <code>score.md</code> 中，并通过一个新的 commit 推送到你的仓库中，分支名为 <code>score-feedback</code>（这是一个临时分支，仅用于让你查看每次评分后各个测试用例的得分情况，<strong>请不要将其用于其他目的</strong>）。</p>
+<p><code>score.md</code> 文件内容示例：</p>
+<table>
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Score</th>
+<th>Status</th>
+<th>Error Message</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Task1 - Case1</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case2</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case3</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case4</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task1 - Case5</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Total</td>
+<td>100</td>
+<td>😊</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>status icons 的含义如下:</p>
+<ul>
+<li>✅: passed the case</li>
+<li>❌: failed the case due to wrong answers</li>
+<li>🕛: failed the case due to timeout if the time limit is set</li>
+<li>❓: failed the case due to some exceptions (the error message will be shown at the corresponding <code>Error Message</code> cell)</li>
+<li>😊: all passed</li>
+<li>🥺: failed at least one case</li>
+</ul>
+<h1 id="Contact"><a href="#Contact" class="headerlink" title="Contact"></a>Contact</h1><p>记得关注老师的 Bilibili 账号，UID 为 390606417，观看<a target="_blank" rel="noopener" href="https://space.bilibili.com/390606417/lists?sid=3771310">线上课程</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LLM-Blog/tags/Environment/" rel="tag"># Environment</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LLM-Blog/2025/06/14/A1-matmul/" rel="prev" title="A1 matmul">
+      <i class="fa fa-chevron-left"></i> A1 matmul
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Environment-Setup"><span class="nav-number">1.</span> <span class="nav-text">Environment Setup</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Option-1-Local-Setup"><span class="nav-number">1.1.</span> <span class="nav-text">Option 1: Local Setup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Option-2-Docker-Setup"><span class="nav-number">1.2.</span> <span class="nav-text">Option 2: Docker Setup</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Code-and-Debug"><span class="nav-number">2.</span> <span class="nav-text">Code and Debug</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Coding"><span class="nav-number">2.1.</span> <span class="nav-text">Coding</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TODO-Tasks-in-A0"><span class="nav-number">2.1.1.</span> <span class="nav-text">TODO: Tasks in A0</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Debugging"><span class="nav-number">2.2.</span> <span class="nav-text">Debugging</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Naive-Debug-Mode"><span class="nav-number">2.2.1.</span> <span class="nav-text">Naive Debug Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Debug-Mode"><span class="nav-number">2.2.2.</span> <span class="nav-text">Deep Debug Mode</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Submission"><span class="nav-number">3.</span> <span class="nav-text">Submission</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scoring"><span class="nav-number">4.</span> <span class="nav-text">Scoring</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Feedback"><span class="nav-number">5.</span> <span class="nav-text">Feedback</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contact"><span class="nav-number">6.</span> <span class="nav-text">Contact</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">DeepEngine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LLM-Blog/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LLM-Blog/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DeepEngine</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div> -->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/LLM-Blog/lib/anime.min.js"></script>
+  <script src="/LLM-Blog/lib/velocity/velocity.min.js"></script>
+  <script src="/LLM-Blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LLM-Blog/js/utils.js"></script>
+
+<script src="/LLM-Blog/js/motion.js"></script>
+
+
+<script src="/LLM-Blog/js/schemes/pisces.js"></script>
+
+
+<script src="/LLM-Blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
