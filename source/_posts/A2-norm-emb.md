@@ -12,24 +12,23 @@ mathjax: true
 #### Task 1: 均方根层归一化 (RMS Norm)
 
 均方根层归一化（RMS Norm）是深度学习中应用最广泛的归一化模块，尤其在自然语言处理（NLP）和大语言模型（LLM）领域。该模块以形状为 `[batch_size, seqlen, hidden_size]` 的张量为输入（记为 `X`，形状为 `[b, s, h]`），并沿着隐藏层 `h` 维度，执行带可学习缩放变换的均方根归一化操作，得到输出 `Y`，形状为 `[b, s, h]`。具体公式如下所示：
+$$
+Y=\frac{X}{RMS[X]} \odot \gamma \tag{1}
+$$
 
 $$
-Y = \frac{X}{RMS[X]} \odot \gamma
-$$
-
-$$
-RMS[X]=\sqrt{\frac{1}{h} \sum_{i=1}^{h}x_i^2 + \epsilon}
+RMS[X]=\sqrt{\frac{1}{h} \sum_{i=1}^{h}x_i^2 + \epsilon} \tag{2}
 $$
 
 其中，$RMS[X]$ 表示 `X` 的均方根，对于 `i in batch_size` 且 `j in seqlen`，对每一个 `X[i][j]`（形状为 `[hidden_size, ]`），独立地计算 *RMS*；$\epsilon$ 是一个极小的常数，用于避免除数为0，记作 `eps`；$\gamma$ 是沿 `h` 维度的可学习参数矩阵，直接与所有 `batch_size` 和 `seqlen` 的隐藏层做 *Hadamard* 乘积，若 `X` 的形状为 `[b, s, h]`，则 $\gamma$ 应该是一个形状为 `[1, 1, h]` 的参数矩阵。
 
 为了将上述均方根层归一化泛化，在 **Task1** 中我们将实现上述模块的一个变体，称为分组均方根层归一化（**Group RMSNorm**）。给定分组大小 `group size`，简记为 `gz`，将 `X`  和 $\gamma$ 的隐藏层维度 `h` 均匀划分为 `Xg` 组，并对第 `i` 组分别应用 $(1) (2)$ 式中的 *RMS Norm* 操作，具体公式如下：
 $$
-Y_{g_i}=\frac{X_{g_i}}{RMS[X_{g_i}]} \odot \gamma_{g_i}
+Y_{g_i}=\frac{X_{g_i}}{RMS[X_{g_i}]} \odot \gamma_{g_i} \tag{3}
 $$
 
 $$
-RMS[X_{g_i}]=\sqrt{\frac{1}{gz} \sum_{j=1}^{gz}x_{g_i, j}^2 + \epsilon}
+RMS[X_{g_i}]=\sqrt{\frac{1}{gz} \sum_{j=1}^{gz}x_{g_i, j}^2 + \epsilon} \tag{4}
 $$
 
 此外，我们还应该为该 *Group RMS Norm* 模块实现一个名为 `reset_parameters` 的参数初始化方法，用于为可学习的参数矩阵 $\gamma$ 设置初始值。我们会提供一个随机数种子（记为 `init_seed`，如42）和一个初始值范围元祖（记为 `init_range`，如 `(-1, 1)`），请使用均匀分布（**uniform distribution**）和 *pytorch* 自带的初始化方法为 *Parameter* 初始化。 
@@ -105,5 +104,82 @@ $$
 3. 参数中的 `dtype` 和 `device` 仅针对可学习嵌入表 `Tr` ，`Tr` 的 `dtype` 和 `device` 可能与 `I` 的不同，可以使用这两个参数和 `torch.nn.Parameter` 完成对 `Tr` 的申请与初始化。
 4. 返回的嵌入张量 `Er` 的 `device` 应与 `I` 相同，`dtype` 与 `Tr` 相同。
 5. 在所有测试用例中，`v` 均能被 `w` 整除，但仍然建议在 `__init__` 方法中使用 `assert` 进行检查，并附上错误提示，这是编程的良好习惯。
+
+{% endnote %}
+
+#### [Optional] Task4：旋转位置编码
+
+Transformer 模型将输入的词元（token）视为一个“词袋”并并行处理，因而本身不具备对序列顺序的感知能力。为保留输入中的序列信息，最初版本的 Transformer 引入了一种新颖的正弦位置编码（Sinusoidal Positional Encoding，简称 SinPE），其定义如下面公式所示：
+$$
+\text{SinPE}(n) :=
+\begin{bmatrix}
+\sin{\left(n\theta^0\right)} \cr
+\cos{\left(n\theta^0\right)} \cr
+\sin{\left(n\theta^1\right)} \cr
+\cos{\left(n\theta^1\right)} \cr
+\vdots \cr
+\sin\left(n\theta^{\frac{d}{2}-1}\right) \cr
+\cos\left(n\theta^{\frac{d}{2}-1}\right)
+\end{bmatrix}
+\quad \text{where }
+\theta := \beta^{-1},\
+\beta := \text{base}^{\frac{2}{d}},\
+n \in \{0, 1, \ldots, L - 1\}
+\tag{5}
+$$
+其中，`L` 表示序列长度，`d` 表示隐藏层维度，`base` 是一个人为设定的大整数，通常取值为10000（请参考原始论文），$\beta$ 是三角函数基的波长或周期的幂次基数，随着维度 `i` 的增大而按几何级数增长，其形式为 $\beta ^ i$，其中 $i=0,1,\ldots,d/2$。
+
+相比之下，旋转位置编码（Rotary Position Embedding，简称 RoPE）在处理长序列时提供了更稳定的方案。它在具备绝对位置信息感知能力的同时，能够捕捉相对位置模式，因此被广泛应用于当前的主流开源大模型（如 LLaMA，ChatCLM）中。随着研究的推进，RoPE 逐渐取代了原始的 SinPE、可学习位置编码（Learnable PE）以及相对位置编码（Relative PE），成为当前 Transformer 结构中位置编码的主流选择。
+
+更具体的说，RoPE 在复数域中对隐藏状态进行旋转操作，而不像 SinPE 那样将位置编码加到隐藏状态中。该方法与 SinPE 共享相同的基函数，如下式所示：
+$$
+\text{RoPE}(n) := 
+\begin{bmatrix}
+R_n^{(0)} \cr
+\phantom{R_n^{(0)}}& R_n^{(1)} \cr
+\phantom{R_n^{(0)}}& \phantom{R_n^{(0)}}& \ddots \cr
+\phantom{R_n^{(0)}}&\phantom{R_n^{(0)}}&\phantom{R_n^{(0)}}& R_n^{\left(\frac{d}{2} - 1\right)}
+\end{bmatrix},
+\quad \text{where } 
+R_n^{(i)} := 
+\begin{bmatrix}
+\cos(n\theta^i) & -\sin(n\theta^i) \cr
+\sin(n\theta^i) & \cos(n\theta^i)
+\end{bmatrix}
+\tag{6}
+$$
+尽管 RoPE（旋转位置编码）具备相对距离衰减和训练稳定性等优势，但在序列长度的外推能力方面仍然存在不足，尤其是在“短序列训练、长序列推理”（Train Short and Test Long）场景下表现不佳（详见参考文献中的 Length Extrapolation 相关论文）。因此，已有多项研究致力于扩展 RoPE 的泛化能力，使其在推理时能有效处理远超训练长度的序列。
+
+在这些方法中，**NTK-aware RoPE** 通过结合高频外推和低频内插来提升外推性能。它通过缩放系数 $c_𝜅$ 对参数 $\beta$ 进行调整，从而实现在最低频率项上以比例 $𝜅$ 进行等效插值，同时保持高频项的尺度不变，如下式所示。这种非线性缩放方式可以直接应用于使用 RoPE 预训练的大语言模型（如 Llama），无需微调即可扩展其上下文长度的边界，这一方法已被 *CodeLlama* 所采纳（详见参考文献中的 Llama RoPE 源代码）。
+
+$$
+\tilde{\beta} := c_\kappa \cdot \beta, \quad 
+s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}} 
+\Rightarrow c_\kappa = \kappa^{2/(d - 2)} \tag{7}
+$$
+在 **Task4** 中，你需要像 `Llama` 一样实现 `NTKAwareRoPE` 模块，但是，有一些差异如下：
+
+- 标准的 RoPE 模块在前向传播时仅返回余弦/正弦基张量，形状为 `[seqlen, head_dim]`，该参数对记作 `(C, S)`，形状记作 `[s, hd]`，实际的旋转编码操作是在另一个独立的函数 `apply_rotary_pos_emb` 完成。
+- 我们遵循这种设计模式：你需要在 `src/functional.py` 中实现 `apply_rotary_pos_emb` 函数，该函数会在 `src/modeling/pos_emb.py` 中导入，并在 `NTKAwareRoPE` 的 `forward` 方法中被调用。与标准做法不同的是，`NTKAwareRoPE` 的 `forward` 方法不仅返回 `(C, S)` 的基张量，还应对输入张量 `X` 应用旋转编码并返回嵌入后的输出张量 `E`，其中：
+  - 输入张量 `X` 的形状为 `[batch_size, seqlen, num_heads, head_dim]`，记作 `[b, s, nh, hd]`；
+  - 输出张量 `E` 的形状与 `X` 的形状相同，表示应用旋转编码后的结果。
+- 另一个问题是，初始化 `NTKAwareRoPE` 时会提供一个训练阶段使用的最大序列长度（记作 `ms`）和一个缩放比例（记作 `k`），此时我们可以预先计算好 `(C, S)`，其形状为 `[es, hd]`，其中 `es = ms x k` 表示最大支持的拓展序列长度。因此，当有一个输入张量 `X_` 的实际序列长度 `s_` 超过了 `es`，即 `s_ > es`，我们必须动态重新计算一对新的 `(C_, S_)`，以确保旋转编码操作可以适用于这类超长输入。
+- 但这里有两个问题：
+  1. 当需要重新计算新的余弦/正弦基 `(C', S')` 时，我们应如何为输入张量 `X'` 确定新的缩放比例 `k'` ？
+  2. 当遇到这类超长序列时，我们是否应该每次仅计算并使用该输入所需的 `(C', S')`，同时保留原始的缩放比例 `k` 及其对应的 `(C, S)` 用于常规输入？或者，我们应该每次都更新当前的 `k` 及其对应的 `(C, S)` 为新的 `k'` 和 `(C', S')` ？
+- 上述问题尚无标准答案。在此任务中，我们采用如下策略：
+  1. 当出现新的输入长度 `s' > es` 时，我们选择满足 `es' = ms x k' >= s'` 的最小 `k'`，其中 `k'` 是一个偶数；
+  2. 我们在初始化 `NTKAwareRoPE` 模块时新增了一个参数 `dynamic`。当 `dynamic = True` 时，每次遇到超出长度的输入时，都会更新当前的 $k \leftarrow k'$ 以及 $(C,S) \leftarrow (C', S')$；反之，若 `dynamic = False` 时，则仅为当前超长输入临时计算并使用 $(C',S')$，而全局的 $k$ 和 $(C,S)$ 保持不变。 
+
+##### TODO
+
+完成 `NTKAwareRoPe` 模块。该模块首先根据参数 `hd` , `ms`, `base`, `k` 初始化原始的位置编码参数对 `(C, S)`。接着，模块接收形状为`[b, s, nh, hd]`的输入张量`X`，并按以下逻辑处理：当序列长度 `s` 小于等于预设最大长度 `es` 时，直接调取缓存的 `(C, S)` 参数；若`s > es`，则重新计算出新的参数 `k_` ，并重新计算新的参数对 `(C_, S_)`。特别地，当参数 `dynamic` 设为 True 时，模块会在重新计算后同步更新内部存储的 `k` 值及 `(C, S)` 参数。最后，模块将通过调用需自行实现的 `apply_rotary_pos_emb` 函数，将对应位置的 `(C, S)` 参数应用于输入张量 `X` ，完成旋转位置编码操作并返回编码结果 `E` 。
+
+{% note warning %}
+
+1. 参数中的 `dtype` 和 `device` 仅针对位置编码参数对 `(C, S)`。通常我们需要更高的精度来处理位置嵌入，因此在所有测试用例中，我们会将数据类型固定为 `float32`，并且建议您在计算的每一步都使用 `float32` 以确保精度一致性。
+2. 返回的张量 `E` 应与输入张量 `X` 保持相同的 `dtype` 和 `device`。
+3. 在实际实现中，位置编码参数对 `(C, S)` 应被视为模块状态的一部分，不仅要能够随着模块一起迁移设备（例如通过 `module.to(device)` 方法），还应在保存模型状态字典时被忽略，因为它们可以根据需要轻松重构。因此，您不应将 `(C, S)` 作为普通 Python 属性直接赋值给 `self`，而是应将其注册为 PyTorch 的非持久缓冲区（Non-persistent Buffer）。具体操作请参考 PyTorch 文档中关于模块注册的相关内容。
+4. 您可以参考 Llama 和 ChatGLM 等模型实现旋转位置编码（RoPE）的方式，但请特别注意上述要求，这些要求与 Llama 和 ChatGLM 的实现细节存在差异。
 
 {% endnote %}
