@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LLM-Blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LLM-Blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LLM-Blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/LLM-Blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LLM-Blog/css/main.css">
+
+
+<link rel="stylesheet" href="/LLM-Blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"big-trex.github.io","root":"/LLM-Blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="LLM-Assignment-Doc">
+<meta property="og:url" content="https://big-trex.github.io/default-index/index.html">
+<meta property="og:site_name" content="LLM-Assignment-Doc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="DeepEngine">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://big-trex.github.io/default-index/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LLM-Assignment-Doc</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LLM-Blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LLM-Assignment-Doc</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LLM-Blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LLM-Blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LLM-Blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/17/A2-norm-emb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
+      <meta itemprop="name" content="DeepEngine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LLM-Assignment-Doc">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LLM-Blog/2025/06/17/A2-norm-emb/" class="post-title-link" itemprop="url">A2 RMSNorm and Embedding</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-06-17 14:17:05" itemprop="dateCreated datePublished" datetime="2025-06-17T14:17:05+08:00">2025-06-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-06-27 13:43:55" itemprop="dateModified" datetime="2025-06-27T13:43:55+08:00">2025-06-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LLM-Blog/categories/Assignment/" itemprop="url" rel="index"><span itemprop="name">Assignment</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="Task-1-均方根层归一化-RMS-Norm"><a href="#Task-1-均方根层归一化-RMS-Norm" class="headerlink" title="Task 1: 均方根层归一化 (RMS Norm)"></a>Task 1: 均方根层归一化 (RMS Norm)</h4><p>均方根层归一化（RMS Norm）是深度学习中应用最广泛的归一化模块，尤其在自然语言处理（NLP）和大语言模型（LLM）领域。该模块以形状为 <code>[batch_size, seqlen, hidden_size]</code> 的张量为输入（记为 <code>X</code>，形状为 <code>[b, s, h]</code>），并沿着隐藏层 <code>h</code> 维度，执行带可学习缩放变换的均方根归一化操作，得到输出 <code>Y</code>，形状为 <code>[b, s, h]</code>。具体公式如下所示：</p>
+<script type="math/tex; mode=display">
+Y=\frac{X}{RMS[X]} \odot \gamma \tag{1}</script><script type="math/tex; mode=display">
+RMS[X]=\sqrt{\frac{1}{h} \sum_{i=1}^{h}x_i^2 + \epsilon} \tag{2}</script><p>其中，$RMS[X]$ 表示 <code>X</code> 的均方根，对于 <code>i in batch_size</code> 且 <code>j in seqlen</code>，对每一个 <code>X[i][j]</code>（形状为 <code>[hidden_size, ]</code>），独立地计算 <em>RMS</em>；$\epsilon$ 是一个极小的常数，用于避免除数为0，记作 <code>eps</code>；$\gamma$ 是沿 <code>h</code> 维度的可学习参数矩阵，直接与所有 <code>batch_size</code> 和 <code>seqlen</code> 的隐藏层做 <em>Hadamard</em> 乘积，若 <code>X</code> 的形状为 <code>[b, s, h]</code>，则 $\gamma$ 应该是一个形状为 <code>[1, 1, h]</code> 的参数矩阵。</p>
+<p>为了将上述均方根层归一化泛化，在 <strong>Task1</strong> 中我们将实现上述模块的一个变体，称为分组均方根层归一化（<strong>Group RMSNorm</strong>）。给定分组大小 <code>group size</code>，简记为 <code>gz</code>，将 <code>X</code>  和 $\gamma$ 的隐藏层维度 <code>h</code> 均匀划分为 <code>Xg</code> 组，并对第 <code>i</code> 组分别应用 $(1) (2)$ 式中的 <em>RMS Norm</em> 操作，具体公式如下：</p>
+<script type="math/tex; mode=display">
+Y_{g_i}=\frac{X_{g_i}}{RMS[X_{g_i}]} \odot \gamma_{g_i} \tag{3}</script><script type="math/tex; mode=display">
+RMS[X_{g_i}]=\sqrt{\frac{1}{gz} \sum_{j=1}^{gz}x_{g_i, j}^2 + \epsilon} \tag{4}</script><p>此外，我们还应该为该 <em>Group RMS Norm</em> 模块实现一个名为 <code>reset_parameters</code> 的参数初始化方法，用于为可学习的参数矩阵 $\gamma$ 设置初始值。我们会提供一个随机数种子（记为 <code>init_seed</code>，如42）和一个初始值范围元祖（记为 <code>init_range</code>，如 <code>(-1, 1)</code>），请使用均匀分布（<strong>uniform distribution</strong>）和 <em>pytorch</em> 自带的初始化方法为 <em>Parameter</em> 初始化。 </p>
+<h5 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>src/modeling/norm.py</code> 中的 <code>GroupRMSNorm</code> 模块，实现上述参数初始化和分组均方根归一化。首先，你需要根据 <code>init_range</code> 和 <code>init_seed</code> ，使用 <strong>uniform distribution</strong> 为 $\gamma$ 初始化，然后将 <code>X</code> 和 <code>gz</code> 作为输入，实现<strong>Group RMSNorm</strong>，并返回输出 <code>Y</code>，形状为 <code>[batch_size, seqlen, hidden_size]</code>。</p>
+<div class="note warning">
+            <ol><li>参数中的 <code>dtype</code> 和 <code>device</code> 仅针对可学习参数矩阵 $\gamma$ ，$\gamma$ 的 <code>dtype</code> 和 <code>device</code> 可能与 <code>X</code> 的不同，可以使用这两个参数和 <code>torch.nn.Parameter</code> 完成对 $\gamma$ 的申请与初始化。</li><li>输出 <code>Y</code> 的属性（包括 <code>dtype</code> 和 <code>device</code>）必须与输入 <code>X</code> 保持一致。</li><li>由于均方根归一化（<em>RMS Norm</em>）涉及除法计算，建议使用 <code>float32</code> 等高精度数据类型以保持数值稳定。</li><li>在所有测试用例中，<code>h</code> 均能被 <code>gz</code> 整除，但仍然建议在 <code>__init__</code> 方法中使用 <code>assert</code> 进行检查，并附上错误提示，这是编程的良好习惯。</li><li>初始化参数时，<code>reset_parameters</code> 方法应在 <code>__init__</code> 方法中调用一次。</li></ol>
+          </div>
+<div class="note info">
+            <p>请自行查阅 <code>pytorch</code> 中乘法的广播机制，对 <strong>Task1</strong> 的实现有很大帮助。</p>
+          </div>
+<h4 id="Task-2-嵌入词表-Vocab-Embedding"><a href="#Task-2-嵌入词表-Vocab-Embedding" class="headerlink" title="Task 2: 嵌入词表 (Vocab Embedding)"></a>Task 2: 嵌入词表 (Vocab Embedding)</h4><p>在 <strong>Task2</strong> 中，我们将要实现一个嵌入词表，以获取之前任务中的输入 <code>X</code>。假设词表的大小为 <code>vocab_size</code>，简记为 <code>v</code>，嵌入词表模块以形状为 <code>[batch_size, seqlen]</code> 的张量 <code>I</code> 作为输入，张量 <code>I</code> 中存储了每个 token 的 ID，ID 的范围是 <code>[0, v-1]</code>。通过查询可学习的嵌入表（记为 <code>T</code>，形状为 <code>[v, e]</code>），为张量 <code>I</code> 中的每个 ID 分配对应的嵌入向量，并返回形状为 <code>[batch_size, seqlen, emb_size]</code> 的嵌入张量 <code>E</code>，简记为 <code>[b, s, e]</code>。</p>
+<p>与 <strong>Task1</strong> 类似，你还应该为 <code>VocabEmbedding</code> 模块类实现 <code>reset_parameters</code> 方法，用于嵌入表 <code>T</code> 的初始化。选用正态分布（<strong>normal distribution</strong>），给定平均值（表示为 <code>init_mean</code>，如 <code>0.</code>），标准差（表示为 <code>init_std</code>，如 <code>1.</code>），以及随机数种子（表示为 <code>init_seed</code>，如 <code>42</code>），对嵌入表 <code>T</code> 初始化，<code>reset_parameters</code> 方法同样需要在 <code>__init__</code> 中显示调用。</p>
+<h5 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>src/modeling/vocab_emb.py</code> 中的 <code>VocabEmbedding</code> 模块，实现上述嵌入词表。首先，你需要根据 <code>init_mean</code>, <code>init_std</code> 和 <code>init_seed</code>，使用 <strong>normal distribution</strong> 对嵌入表 <code>T</code> 初始化，然后将 <code>I</code> 作为输入，实现词表嵌入，并返回嵌入张量 <code>E</code>。</p>
+<div class="note warning">
+            <ol><li>输入 <code>I</code> 存储每个 token 的 ID，其 <code>dtype</code> 为 <code>torch.long</code>。</li><li>你的实现不应该更改 <code>I</code>，包括 <code>I</code> 的数值与属性（包括 <code>I</code> 的 <code>shape</code>， <code>dtype</code> 和 <code>device</code> 等），因为 <code>I</code> 可能还有其他用途。</li><li>参数中的 <code>dtype</code> 和 <code>device</code> 仅针对可学习嵌入表 <code>T</code> ，<code>T</code> 的 <code>dtype</code> 和 <code>device</code> 可能与 <code>I</code> 的不同，可以使用这两个参数和 <code>torch.nn.Parameter</code> 完成对 <code>T</code> 的申请与初始化。</li><li>返回的嵌入张量 <code>E</code> 的 <code>device</code> 应与 <code>I</code> 相同，<code>dtype</code> 与 <code>T</code> 相同。</li></ol>
+          </div>
+<h4 id="Task-3-分布式并行嵌入词表-Parallel-Vocab-Embedding"><a href="#Task-3-分布式并行嵌入词表-Parallel-Vocab-Embedding" class="headerlink" title="Task 3: 分布式并行嵌入词表 (Parallel Vocab Embedding)"></a>Task 3: 分布式并行嵌入词表 (Parallel Vocab Embedding)</h4><p>在 <strong>Task3</strong> 中，我们将在 <strong>Task2</strong> 实现的嵌入词表的基础上，实现分布式的嵌入词表。随着 <strong>LLM</strong> 规模迅速扩大，词表的大小已经增长到 <code>128K+</code>，嵌入词表很难在一块 <strong>GPU</strong>上存储和计算。</p>
+<p>因此，我们将实现一个“分布式并行嵌入词表”模块解决这个问题。假设通信组的大小为 <code>world_size</code>，简记为 <code>w</code>，在本实验中你可以简单的理解为 <strong>GPU</strong> 的数量，每块 <strong>GPU</strong> 都会有一个序号 <code>rank</code>（记为 <code>r</code>，且 $r \in[0,w-1]$），我们将大小为 <code>v</code> 的词表均匀的分配到 <code>w</code> 张 <strong>GPU</strong> 中，每张卡获取大小为 <code>v//w</code> 的一个分片。通过这种方式，可以减小单卡 <strong>GPU</strong> 中嵌入表的存储压力，还能并行执行词表嵌入，以加速计算。</p>
+<div class="note info">
+            <p>在真实的分布式环境中，<code>world_size</code> 和 <code>rank</code> 都可以直接从环境变量和通信组中获取，但限于资源有限，我们省去通信，仅保留计算逻辑，并直接在参数中给出 <code>world_size</code> 和 <code>rank</code>，以模拟分布式环境。</p>
+          </div>
+<p>给定词表大小 <code>v</code>，嵌入维度 <code>e</code>，<strong>GPU</strong> 序号 <code>r</code>，<strong>GPU</strong> 数量 <code>w</code>，并行词表嵌入模块的流程如下：</p>
+<ol>
+<li>对于序号为 <code>r</code> 的 <strong>GPU</strong>，分得大小为 <code>n = v // m</code> 的词表，其只关注区间 $[r \cdot n, (r+1)\cdot n-1]$ 内的词元 ID，该区间记为 <code>R</code>；</li>
+<li>从正态分布中初始化局部嵌入表 <code>Tr</code>，请自行计算 <code>Tr</code> 的形状；</li>
+<li>接收输入张量 <code>I</code>，对其中属于区间 <code>R</code> 的 ID 查询 <code>Tr</code> 获取嵌入向量，对超出范围的 ID 用全零向量替代；</li>
+<li>计算得到局部嵌入 <code>Er</code>，形状与标准嵌入 <code>E</code> 一致，但仅包含区间 <code>R</code> 内 ID 有效的嵌入向量，其余位置为全零。（通过通信累加所有 <strong>GPU</strong> 的 <code>Er</code> 即可重构完整词表的嵌入结果，本实验省去通信累加步骤）</li>
+</ol>
+<p>与 <strong>Task2</strong> 类似，你还应该为 <code>ParallelVocabEmbedding</code> 模块类实现 <code>reset_parameters</code> 方法，用于嵌入表 <code>Tr</code> 的初始化。不同的是，此时参数中的随机数种子是基础随机数种子，记为 <code>init_base_seed</code>，而真正的随机数种子应为 <code>init_base_seed + r</code>，以避免对所有的参数矩阵进行相同的初始化。</p>
+<h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>src/modeling/vocab_emb.py</code> 中的 <code>ParallelVocabEmbedding</code> 模块，实现上述嵌入词表。首先，你需要根据 <code>init_mean</code>, <code>init_std</code> 和 <code>init_base_seed</code>，使用 <strong>normal distribution</strong> 对嵌入表 <code>Tr</code> 初始化，然后将 <code>I</code> 作为输入，实现词表嵌入，并返回不完整的嵌入张量 <code>Er</code>。</p>
+<div class="note warning">
+            <ol><li>输入 <code>I</code> 存储每个 token 的 ID，其 <code>dtype</code> 为 <code>torch.long</code>。</li><li>你的实现不应该更改 <code>I</code>，包括 <code>I</code> 的数值与属性（包括 <code>I</code> 的 <code>shape</code>， <code>dtype</code> 和 <code>device</code> 等），因为 <code>I</code> 可能还有其他用途。</li><li>参数中的 <code>dtype</code> 和 <code>device</code> 仅针对可学习嵌入表 <code>Tr</code> ，<code>Tr</code> 的 <code>dtype</code> 和 <code>device</code> 可能与 <code>I</code> 的不同，可以使用这两个参数和 <code>torch.nn.Parameter</code> 完成对 <code>Tr</code> 的申请与初始化。</li><li>返回的嵌入张量 <code>Er</code> 的 <code>device</code> 应与 <code>I</code> 相同，<code>dtype</code> 与 <code>Tr</code> 相同。</li><li>在所有测试用例中，<code>v</code> 均能被 <code>w</code> 整除，但仍然建议在 <code>__init__</code> 方法中使用 <code>assert</code> 进行检查，并附上错误提示，这是编程的良好习惯。</li></ol>
+          </div>
+<h4 id="Optional-Task4：旋转位置编码"><a href="#Optional-Task4：旋转位置编码" class="headerlink" title="[Optional] Task4：旋转位置编码"></a>[Optional] Task4：旋转位置编码</h4><p>Transformer 模型将输入的词元（token）视为一个“词袋”并并行处理，因而本身不具备对序列顺序的感知能力。为保留输入中的序列信息，最初版本的 Transformer 引入了一种新颖的正弦位置编码（Sinusoidal Positional Encoding，简称 SinPE），其定义如下面公式所示：</p>
+<script type="math/tex; mode=display">
+\text{SinPE}(n) :=
+\begin{bmatrix}
+\sin{\left(n\theta^0\right)} \cr
+\cos{\left(n\theta^0\right)} \cr
+\sin{\left(n\theta^1\right)} \cr
+\cos{\left(n\theta^1\right)} \cr
+\vdots \cr
+\sin\left(n\theta^{\frac{d}{2}-1}\right) \cr
+\cos\left(n\theta^{\frac{d}{2}-1}\right)
+\end{bmatrix}
+\quad \text{where }
+\theta := \beta^{-1},\
+\beta := \text{base}^{\frac{2}{d}},\
+n \in \{0, 1, \ldots, L - 1\}
+\tag{5}</script><p>其中，<code>L</code> 表示序列长度，<code>d</code> 表示隐藏层维度，<code>base</code> 是一个人为设定的大整数，通常取值为10000（请参考原始论文），$\beta$ 是三角函数基的波长或周期的幂次基数，随着维度 <code>i</code> 的增大而按几何级数增长，其形式为 $\beta ^ i$，其中 $i=0,1,\ldots,d/2$。</p>
+<p>相比之下，旋转位置编码（Rotary Position Embedding，简称 RoPE）在处理长序列时提供了更稳定的方案。它在具备绝对位置信息感知能力的同时，能够捕捉相对位置模式，因此被广泛应用于当前的主流开源大模型（如 LLaMA，ChatCLM）中。随着研究的推进，RoPE 逐渐取代了原始的 SinPE、可学习位置编码（Learnable PE）以及相对位置编码（Relative PE），成为当前 Transformer 结构中位置编码的主流选择。</p>
+<p>更具体的说，RoPE 在复数域中对隐藏状态进行旋转操作，而不像 SinPE 那样将位置编码加到隐藏状态中。该方法与 SinPE 共享相同的基函数，如下式所示：</p>
+<script type="math/tex; mode=display">
+\text{RoPE}(n) := 
+\begin{bmatrix}
+R_n^{(0)} \cr
+\phantom{R_n^{(0)}}& R_n^{(1)} \cr
+\phantom{R_n^{(0)}}& \phantom{R_n^{(0)}}& \ddots \cr
+\phantom{R_n^{(0)}}&\phantom{R_n^{(0)}}&\phantom{R_n^{(0)}}& R_n^{\left(\frac{d}{2} - 1\right)}
+\end{bmatrix},
+\quad \text{where } 
+R_n^{(i)} := 
+\begin{bmatrix}
+\cos(n\theta^i) & -\sin(n\theta^i) \cr
+\sin(n\theta^i) & \cos(n\theta^i)
+\end{bmatrix}
+\tag{6}</script><p>尽管 RoPE（旋转位置编码）具备相对距离衰减和训练稳定性等优势，但在序列长度的外推能力方面仍然存在不足，尤其是在“短序列训练、长序列推理”（Train Short and Test Long）场景下表现不佳（详见参考文献中的 Length Extrapolation 相关论文）。因此，已有多项研究致力于扩展 RoPE 的泛化能力，使其在推理时能有效处理远超训练长度的序列。</p>
+<p>在这些方法中，<strong>NTK-aware RoPE</strong> 通过结合高频外推和低频内插来提升外推性能。它通过缩放系数 $c_𝜅$ 对参数 $\beta$ 进行调整，从而实现在最低频率项上以比例 $𝜅$ 进行等效插值，同时保持高频项的尺度不变，如下式所示。这种非线性缩放方式可以直接应用于使用 RoPE 预训练的大语言模型（如 Llama），无需微调即可扩展其上下文长度的边界，这一方法已被 <em>CodeLlama</em> 所采纳（详见参考文献中的 Llama RoPE 源代码）。</p>
+<script type="math/tex; mode=display">
+\tilde{\beta} := c_\kappa \cdot \beta, \quad 
+s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}} 
+\Rightarrow c_\kappa = \kappa^{2/(d - 2)} \tag{7}</script><p>在 <strong>Task4</strong> 中，你需要像 <code>Llama</code> 一样实现 <code>NTKAwareRoPE</code> 模块，但是，有一些差异如下：</p>
+<ul>
+<li>标准的 RoPE 模块在前向传播时仅返回余弦/正弦基张量，形状为 <code>[seqlen, head_dim]</code>，该参数对记作 <code>(C, S)</code>，形状记作 <code>[s, hd]</code>，实际的旋转编码操作是在另一个独立的函数 <code>apply_rotary_pos_emb</code> 完成。</li>
+<li>我们遵循这种设计模式：你需要在 <code>src/functional.py</code> 中实现 <code>apply_rotary_pos_emb</code> 函数，该函数会在 <code>src/modeling/pos_emb.py</code> 中导入，并在 <code>NTKAwareRoPE</code> 的 <code>forward</code> 方法中被调用。与标准做法不同的是，<code>NTKAwareRoPE</code> 的 <code>forward</code> 方法不仅返回 <code>(C, S)</code> 的基张量，还应对输入张量 <code>X</code> 应用旋转编码并返回嵌入后的输出张量 <code>E</code>，其中：<ul>
+<li>输入张量 <code>X</code> 的形状为 <code>[batch_size, seqlen, num_heads, head_dim]</code>，记作 <code>[b, s, nh, hd]</code>；</li>
+<li>输出张量 <code>E</code> 的形状与 <code>X</code> 的形状相同，表示应用旋转编码后的结果。</li>
+</ul>
+</li>
+<li>另一个问题是，初始化 <code>NTKAwareRoPE</code> 时会提供一个训练阶段使用的最大序列长度（记作 <code>ms</code>）和一个缩放比例（记作 <code>k</code>），此时我们可以预先计算好 <code>(C, S)</code>，其形状为 <code>[es, hd]</code>，其中 <code>es = ms x k</code> 表示最大支持的拓展序列长度。因此，当有一个输入张量 <code>X_</code> 的实际序列长度 <code>s_</code> 超过了 <code>es</code>，即 <code>s_ &gt; es</code>，我们必须动态重新计算一对新的 <code>(C_, S_)</code>，以确保旋转编码操作可以适用于这类超长输入。</li>
+<li>但这里有两个问题：<ol>
+<li>当需要重新计算新的余弦/正弦基 <code>(C&#39;, S&#39;)</code> 时，我们应如何为输入张量 <code>X&#39;</code> 确定新的缩放比例 <code>k&#39;</code> ？</li>
+<li>当遇到这类超长序列时，我们是否应该每次仅计算并使用该输入所需的 <code>(C&#39;, S&#39;)</code>，同时保留原始的缩放比例 <code>k</code> 及其对应的 <code>(C, S)</code> 用于常规输入？或者，我们应该每次都更新当前的 <code>k</code> 及其对应的 <code>(C, S)</code> 为新的 <code>k&#39;</code> 和 <code>(C&#39;, S&#39;)</code> ？</li>
+</ol>
+</li>
+<li>上述问题尚无标准答案。在此任务中，我们采用如下策略：<ol>
+<li>当出现新的输入长度 <code>s&#39; &gt; es</code> 时，我们选择满足 <code>es&#39; = ms x k&#39; &gt;= s&#39;</code> 的最小 <code>k&#39;</code>，其中 <code>k&#39;</code> 是一个偶数；</li>
+<li>我们在初始化 <code>NTKAwareRoPE</code> 模块时新增了一个参数 <code>dynamic</code>。当 <code>dynamic = True</code> 时，每次遇到超出长度的输入时，都会更新当前的 $k \leftarrow k’$ 以及 $(C,S) \leftarrow (C’, S’)$；反之，若 <code>dynamic = False</code> 时，则仅为当前超长输入临时计算并使用 $(C’,S’)$，而全局的 $k$ 和 $(C,S)$ 保持不变。 </li>
+</ol>
+</li>
+</ul>
+<h5 id="TODO-3"><a href="#TODO-3" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>NTKAwareRoPe</code> 模块。该模块首先根据参数 <code>hd</code> , <code>ms</code>, <code>base</code>, <code>k</code> 初始化原始的位置编码参数对 <code>(C, S)</code>。接着，模块接收形状为<code>[b, s, nh, hd]</code>的输入张量<code>X</code>，并按以下逻辑处理：当序列长度 <code>s</code> 小于等于预设最大长度 <code>es</code> 时，直接调取缓存的 <code>(C, S)</code> 参数；若<code>s &gt; es</code>，则重新计算出新的参数 <code>k_</code> ，并重新计算新的参数对 <code>(C_, S_)</code>。特别地，当参数 <code>dynamic</code> 设为 True 时，模块会在重新计算后同步更新内部存储的 <code>k</code> 值及 <code>(C, S)</code> 参数。最后，模块将通过调用需自行实现的 <code>apply_rotary_pos_emb</code> 函数，将对应位置的 <code>(C, S)</code> 参数应用于输入张量 <code>X</code> ，完成旋转位置编码操作并返回编码结果 <code>E</code> 。</p>
+<div class="note warning">
+            <ol><li>参数中的 <code>dtype</code> 和 <code>device</code> 仅针对位置编码参数对 <code>(C, S)</code>。通常我们需要更高的精度来处理位置嵌入，因此在所有测试用例中，我们会将数据类型固定为 <code>float32</code>，并且建议您在计算的每一步都使用 <code>float32</code> 以确保精度一致性。</li><li>返回的张量 <code>E</code> 应与输入张量 <code>X</code> 保持相同的 <code>dtype</code> 和 <code>device</code>。</li><li>在实际实现中，位置编码参数对 <code>(C, S)</code> 应被视为模块状态的一部分，不仅要能够随着模块一起迁移设备（例如通过 <code>module.to(device)</code> 方法），还应在保存模型状态字典时被忽略，因为它们可以根据需要轻松重构。因此，您不应将 <code>(C, S)</code> 作为普通 Python 属性直接赋值给 <code>self</code>，而是应将其注册为 PyTorch 的非持久缓冲区（Non-persistent Buffer）。具体操作请参考 PyTorch 文档中关于模块注册的相关内容。</li><li>您可以参考 Llama 和 ChatGLM 等模型实现旋转位置编码（RoPE）的方式，但请特别注意上述要求，这些要求与 Llama 和 ChatGLM 的实现细节存在差异。</li></ol>
+          </div>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/14/A0-onboarding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
+      <meta itemprop="name" content="DeepEngine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LLM-Assignment-Doc">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LLM-Blog/2025/06/14/A0-onboarding/" class="post-title-link" itemprop="url">A0 onboarding</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-06-14 16:54:20" itemprop="dateCreated datePublished" datetime="2025-06-14T16:54:20+08:00">2025-06-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-06-27 13:52:44" itemprop="dateModified" datetime="2025-06-27T13:52:44+08:00">2025-06-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LLM-Blog/categories/Assignment/" itemprop="url" rel="index"><span itemprop="name">Assignment</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。</p>
+<h1 id="Environment-Setup"><a href="#Environment-Setup" class="headerlink" title="Environment Setup"></a>Environment Setup</h1><h2 id="Option-1-Local-Setup"><a href="#Option-1-Local-Setup" class="headerlink" title="Option 1: Local Setup"></a>Option 1: Local Setup</h2><ul>
+<li><strong>Python</strong>: 3.10 或更高版本  </li>
+<li><strong>Packages</strong>: 推荐通过以下命令安装所有必要的依赖项：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure></li>
+<li><strong>Optional</strong>: 建议使用 Nvidia GPU 并安装 CUDA 12.0 或更高版本 ，否则某些功能可能无法正常运行（我们会尽最大努力确保硬件差异不会影响你的评分）。</li>
+</ul>
+<div class="note info">
+            <p><strong>注意</strong>：不同作业的 requirements.txt 可能略有差异</p>
+          </div>
+<h2 id="Option-2-Docker-Setup"><a href="#Option-2-Docker-Setup" class="headerlink" title="Option 2: Docker Setup"></a>Option 2: Docker Setup</h2><p>强烈建议使用来自 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/index.html">Nvidia PyTorch Release</a> 的 Docker 镜像（例如 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-23-10.html#rel-23-10">23.10</a> 或更新的版本）作为基础环境，以避免依赖冲突。</p>
+<p>TODO: 完善</p>
+<h1 id="Code-and-Debug"><a href="#Code-and-Debug" class="headerlink" title="Code and Debug"></a>Code and Debug</h1><h2 id="Coding"><a href="#Coding" class="headerlink" title="Coding"></a>Coding</h2><p>所有完成 Tasks 所需的文件都位于 <code>src/</code> 目录下，该目录是<strong>唯一</strong>会被作为 Python 模块导入的目录。因此，你需要注意以下几点：</p>
+<ul>
+<li><code>__init__.py</code> 文件对于 Python 模块来说是必不可少的，我们已经在 <code>src/</code> 中为你初始化好了所有必要的 <code>__init__.py</code> 文件，因此如果你出于个人目的需要修改它们，请务必小心。</li>
+<li>如果你有其他需要在模块内部导入的文件（例如 <code>utils.py</code>），请确保它们也都放在 <code>src/</code> 目录下，并使用相对导入方式，例如：<code>from .utils import *，from .common.utils import ...</code> 等。</li>
+</ul>
+<h3 id="TODO-Task-A0"><a href="#TODO-Task-A0" class="headerlink" title="TODO: Task A0"></a>TODO: Task A0</h3><p>A0 的任务很简单，<strong>不需要你进行任何 coding</strong>，我们提供了一个 demo，用来帮助你测试本地环境、测试提交流程以及熟悉 PyTorch 编程。接下来，以 demo 为例，主要介绍：</p>
+<ul>
+<li>理解神经网络中反向传播（Backward）的基本原理。</li>
+<li>实现一个线性层 ManualLinear 并手动计算梯度。</li>
+<li>比较 PyTorch 自动求导机制与手动计算的一致性。</li>
+</ul>
+<p>我们模拟的是一个最基本的线性变换 $\mathbf{Y} = \mathbf{X} \times \mathbf{W}$，其中：</p>
+<ul>
+<li>$\mathbf{X} \in \mathbb{R}^{B \times H \times D}$：输入张量，可以理解为批次、序列、特征维度；</li>
+<li>$\mathbf{W} \in \mathbb{R}^{D \times E}$：权重矩阵；</li>
+<li>$\mathbf{Y} \in \mathbb{R}^{B \times H \times E}$：输出张量。</li>
+</ul>
+<p>我们进一步定义一个标量损失函数 <code>loss = (Y ** 2).sum()</code>，即：</p>
+<script type="math/tex; mode=display">
+\text{Loss} = \sum_{i,j,k} \mathbf{Y}_{ijk}^2</script><p>进一步，完整的 <code>forward</code> 过程即 $\mathbf{Y} = \mathbf{X} \times \mathbf{W}，\text{Loss} = \sum<em>{i,j,k} \mathbf{Y}</em>{ijk}^2$，我们首先给出对应的 <code>backward</code> 的计算过程：</p>
+<script type="math/tex; mode=display">
+\mathbf{G} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}} = 2\mathbf{Y} \in \mathbb{R}^{B \times H \times E}</script><script type="math/tex; mode=display">
+\frac{\partial \text{Loss}}{\partial \mathbf{X}} = \mathbf{G} \times \mathbf{W}^\top = 2\mathbf{Y} \times \mathbf{W}^\top \in \mathbb{R}^{B \times H \times D}</script><script type="math/tex; mode=display">
+\frac{\partial \text{Loss}}{\partial \mathbf{W}} = \sum_{i=1}^B \sum_{j=1}^H \mathbf{X}_{ij}^\top \mathbf{G}{ij} = \mathbf{X}_{flat}^\top \times \mathbf{G}_{flat} \in \mathbb{R}^{D \times E}， \mathbf{X}_{flat} \in \mathbb{R}^{(B \cdot H) \times D}，\mathbf{G}_{flat} \in \mathbb{R}^{(B \cdot H) \times E}</script><p>最终，demo 中模拟实现的 <code>ManualLinear</code> 如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ManualLinear</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim, out_dim, device=<span class="literal">None</span>, dtype=torch.float32</span>):</span><br><span class="line">        <span class="variable language_">self</span>.W = torch.randn(in_dim, out_dim, device=device, dtype=dtype, requires_grad=<span class="literal">False</span>)</span><br><span class="line">        <span class="variable language_">self</span>.W_grad = torch.zeros_like(<span class="variable language_">self</span>.W)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="variable language_">self</span>.<span class="built_in">input</span> = x</span><br><span class="line">        <span class="comment"># [b,h,d] @ [d,e] -&gt; [b,h,e]</span></span><br><span class="line">        <span class="keyword">return</span> x @ <span class="variable language_">self</span>.W</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, grad_output</span>):</span><br><span class="line">        <span class="comment"># grad_output: [b, h, e]</span></span><br><span class="line">        <span class="comment"># dL/dW = X^T @ grad_output</span></span><br><span class="line">        b, h, d = <span class="variable language_">self</span>.<span class="built_in">input</span>.shape</span><br><span class="line">        <span class="comment"># [b,h,d] -&gt; [b*h, d]</span></span><br><span class="line">        x_flat = <span class="variable language_">self</span>.<span class="built_in">input</span>.reshape(-<span class="number">1</span>, d)</span><br><span class="line">        <span class="comment"># [b,h,e] -&gt; [b*h, e]</span></span><br><span class="line">        grad_out_flat = grad_output.reshape(-<span class="number">1</span>, <span class="variable language_">self</span>.W.shape[<span class="number">1</span>])</span><br><span class="line">        <span class="comment"># [d, b*h] @ [b*h, e] -&gt; [d, e]</span></span><br><span class="line">        <span class="variable language_">self</span>.W_grad = x_flat.T @ grad_out_flat</span><br><span class="line">        <span class="comment"># dL/dx = grad_output @ W^T</span></span><br><span class="line">        <span class="comment"># [b,h,e] @ [e,d] -&gt; [b,h,d]</span></span><br><span class="line">        grad_input = grad_output @ <span class="variable language_">self</span>.W.T</span><br><span class="line">        <span class="keyword">return</span> grad_input</span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== Manual ==========</span></span><br><span class="line">manual_linear = ManualLinear(d, e, device=device, dtype=dtype)</span><br><span class="line">y_manual = manual_linear.forward(x)</span><br><span class="line">loss_manual = y_manual.<span class="built_in">pow</span>(<span class="number">2</span>).<span class="built_in">sum</span>()</span><br><span class="line">grad_output = <span class="number">2</span> * y_manual</span><br><span class="line">grad_input_manual = manual_linear.backward(grad_output)</span><br></pre></td></tr></table></figure></p>
+<p>接下来，我们简要解释 <code>ManualLinear</code> 中反向传播对于输入梯度和权重梯度的计算推导。对于矩阵求导，其本质仍然是实矩阵函数 $\mathbf{F}$ 中的每个 $f$ 分别对矩阵变元 $\mathbf{X}$ 中的每个变量 $x$ 逐个求偏导，只是需要组织成向量、矩阵的形式。假设 $\mathbf{F}$ 中有 $m$ 个 $f$，变元中有 $n$ 个元素，那么，每个 $f$ 对变元中的每个元素逐个求偏导后，一共会产生 $m \times n$ 个结果。不严谨地，从直观上看：</p>
+<ul>
+<li>如果分子是列向量形式，分母是行向量形式，矩阵求导的结果组织成<strong>分子布局</strong>：</li>
+</ul>
+<script type="math/tex; mode=display">
+\frac{\partial \mathbf{F}_{2 \times 1}(\mathbf{X})}{\partial \mathbf{X}_{3 \times 1}^\top} = 
+\begin{bmatrix}
+\frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} & \frac{\partial f_1}{\partial x_3} \\
+\frac{\partial f_2}{\partial x_1} & \frac{\partial f_2}{\partial x_2} & \frac{\partial f_2}{\partial x_3}
+\end{bmatrix}_{2 \times 3}</script><ul>
+<li>如果分子是行向量形式，分母是列向量形式，矩阵求导的结果组织成<strong>分母布局</strong>：</li>
+</ul>
+<script type="math/tex; mode=display">
+\frac{\partial \mathbf{F}_{2 \times 1}^\top (\mathbf{X})}{\partial \mathbf{X}_{3 \times 1}} = 
+\begin{bmatrix}
+\frac{\partial f_1}{\partial x_1} & \frac{\partial f_2}{\partial x_1} \\
+\frac{\partial f_1}{\partial x_2} & \frac{\partial f_2}{\partial x_2} \\
+\frac{\partial f_1}{\partial x_3} & \frac{\partial f_2}{\partial x_3}
+\end{bmatrix}_{3 \times 2}</script><p>从结果看，两种布局只相差一个转置操作。实际上，分子布局和分母布局只是讨论矩阵求导中约定俗成的概念，并没有教材进行严格定义，所以请大家自行查阅相关资料更进一步地理解。这里介绍矩阵求导的布局，主要原因是涉及到深度学习框架自动求导算法的实现，影响最终梯度张量的 <code>shape</code>。理论上对于自动求导算法，分子布局和分母布局都可以使用，只要计算图遵循统一的约定并在实现中自洽即可。但在实际的深度学习工程中，几乎所有主流框架（如 PyTorch、TensorFlow、JAX）都采用<strong>分母布局</strong>（梯度矩阵形式），即梯度张量的 shape 总是和变量（输入）保持一致，在工程上非常自然、直观。</p>
+<p>在约定好求导的布局后。我们就可以引入关于矩阵求导的数学推导。常见的矩阵求导方法主要包括：</p>
+<ul>
+<li>定义法：直接根据矩阵求导定义展开，将每个元素的导数显式列出。这种方法最为直观，但操作繁琐，通常只用于教学或验证小型表达式。</li>
+<li>微分法：利用微分符号 $dX, dY$ 建立关系，从中提取导数结构。</li>
+<li>迹技巧：通过将矩阵函数转化为 $\mathrm{tr}(A^\top B)$ 等形式，借助求导规则间接推导结果。</li>
+</ul>
+<p>关于矩阵求导的数学推导请大家自行查阅学习相关资料，我们在这里不进行详细展开。因为在工程中，我们往往<strong>不会显示构造一个矩阵对矩阵求导的完整梯度矩阵（或 Jacobian 矩阵）</strong>。一方面，我们只关心损失函数对参数矩阵的导数结果，并不需要中间层变量的完整梯度；另一方面，当考虑一个 $\mathbb{R}^{m \times n}$ 的矩阵对一个 $\mathbb{R}^{p \times q}$ 的矩阵求导的结果，实际会得到一个四阶张量 $(m,n,p,q)$，那如果继续对另外一个高阶张量求导，情况会更加复杂。实际工程中，我们很难去描述任意阶的张量矩阵，因此在实践中不会显式构造完整的梯度矩阵。</p>
+<p>对于 demo 中的例子，为了得到 $\frac{\partial \text{Loss}}{\partial \mathbf{X}}$ 和 $\frac{\partial \text{Loss}}{\partial \mathbf{W}}$，我们通常依赖<strong>结构化的链式法则</strong>，即在计算图中从后向前地传播梯度，计算图中的每个节点（算子）都实现了其对输入变量的局部导数，反向传播时，节点得到来自下一层的“上游梯度”（即 Loss 对其输出的梯度），并与自身的局部梯度进行链式组合（如矩阵乘），从而计算出 Loss 对其输入的梯度，并继续传播。例如：</p>
+<script type="math/tex; mode=display">
+\frac{\partial \text{Loss}}{\partial \mathbf{X}} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}} \frac{\partial \mathbf{Y}}{\partial \mathbf{X}}, \quad
+\frac{\partial \text{Loss}}{\partial \mathbf{W}} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}} \frac{\partial \mathbf{Y}}{\partial \mathbf{W}}</script><p>对于 <code>ManualLinear backward</code>，其上游梯度即 $\text{grad_output} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}} = 2 \mathbf{Y}$，局部导数推导：</p>
+<ul>
+<li><p>对于 $\frac{\partial \mathbf{Y}}{\partial \mathbf{X}}$：</p>
+<p>对任意样本 $(i,j,:)$，有：</p>
+<script type="math/tex; mode=display">
+\mathbf{Y}_{ij:} = \mathbf{X}_{ij:} \times \mathbf{W} \Rightarrow \frac{\partial \mathbf{Y}_{ij:}}{\partial \mathbf{X}_{ij:}} = \mathbf{W}</script><script type="math/tex; mode=display">\frac{\partial \text{Loss}}{\partial \mathbf{X}_{ij:}} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}_{ij:}} \frac{\partial \mathbf{Y}_{ij:}}{\partial \mathbf{X}_{ij:}} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}_{ij:}} \times \mathbf{W}^\top</script><p>由此，我们得到局部导数形式：</p>
+<script type="math/tex; mode=display">
+\mathbf{Y} = \mathbf{X} \times \mathbf{W} \Rightarrow
+\frac{\partial \mathbf{Y}}{\partial \mathbf{X}} = \mathbf{W}^\top</script></li>
+<li><p>对于 $\frac{\partial \mathbf{Y}}{\partial \mathbf{W}}$：</p>
+<p>首先，考虑单个样本 $ \mathbf{X}_i $ 的 <code>forward</code> 计算，有：$\mathbf{y} = \mathbf{x} \times W$，如果把 b 理解成 batch，那 $\mathbf{W}$ 对不同样本共享权重。同样：</p>
+<script type="math/tex; mode=display">\mathbf{y}_{j:}=\mathbf{x}_j \times \mathbf{W} \Rightarrow \frac{\partial \mathbf{y}_{jk}}{\partial \mathbf{W}_{:k}} = \mathbf{x}_j^\top</script><script type="math/tex; mode=display">\frac{\partial \text{Loss}^{(i)}}{\partial \mathbf{W}} = \frac{\partial \text{Loss}^{(i)}}{\partial \mathbf{Y}_i}\frac{\partial \mathbf{Y}_i}{\partial \mathbf{W}} = \mathbf{X}_i^\top \times \frac{\partial \text{Loss}^{(i)}}{\partial \mathbf{Y}_i}</script><p>其中，$\text{Loss}^{(i)}$ 可以理解为第 $i$ 个样本对于最终损失的贡献。最后，考虑 batch 个样本，根据链式法则组合，有：</p>
+<script type="math/tex; mode=display">\frac{\partial \text{Loss}}{\partial \mathbf{W}} = \sum_{i=1}^{b} \mathbf{X}_i^\top \times \frac{\partial \text{Loss}}{\partial \mathbf{Y}_i}</script><p>由此，我们得到局部导数形式：</p>
+<script type="math/tex; mode=display">
+\mathbf{Y} = \mathbf{X} \times \mathbf{W} \Rightarrow
+\frac{\partial \mathbf{Y}}{\partial \mathbf{W}} = \mathbf{X}^\top</script></li>
+</ul>
+<div class="note warning">
+            <p><strong>注意</strong>: 这里的推导并不符合数学上严谨推导，局部导数形式中的“=”并不严格等于，含义是该局部导数在结构上应该这样表示，并没有构造中间变量的完整梯度矩阵，主要用于帮助理解。</p>
+          </div>
+<p>至此，我们不严谨地解释了 <code>ManualLinear backward</code> 的计算过程，至于上游梯度和局部导数如何组合，完全是按照分母布局的形式，即梯度 <code>shape</code> 保持与变量（输入）一致。</p>
+<h2 id="Debugging"><a href="#Debugging" class="headerlink" title="Debugging"></a>Debugging</h2><p>以下内容用于帮助你调试和 debug：</p>
+<h3 id="Naive-Debug-Mode"><a href="#Naive-Debug-Mode" class="headerlink" title="Naive Debug Mode"></a>Naive Debug Mode</h3><ul>
+<li>我们会在 <code>test_toy.py</code> 中提供一些带有明确答案的测试用例，这对你是可见的。</li>
+<li>建议在提交前，先在自己的机器上确保代码正确运行，可以使用以下命令进行测试：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pytest test_toy.py</span><br></pre></td></tr></table></figure></li>
+<li>你可以根据自己的调试需求自由修改 <code>test_toy.py</code> 文件，我们不会使用它（以及下面提到的 <code>test_with_ref.py</code>）来为你的代码打分。</li>
+</ul>
+<h3 id="Deep-Debug-Mode"><a href="#Deep-Debug-Mode" class="headerlink" title="Deep Debug Mode"></a>Deep Debug Mode</h3><ul>
+<li>根据 <code>test_toy.py</code>，我们提供了另一个测试文件 <code>test_with_ref.py</code>，其中会导入一个闭源的参考包 ref（结构与 src 相同，例如 <code>from ref import ...</code>，<code>from ref.modeling import ...</code>）。因此，你可以在基础的 toy 测试之外，自行创建测试用例，并与参考实现进行比较。</li>
+<li>在我们提供的 <code>a&#123;x&#125;_env_v&#123;y&#125;.tar</code>（基于 NGC PyTorch）或 <code>a&#123;x&#125;_env_light_v&#123;y&#125;.tar</code>（基于 Ubuntu）的 Docker 镜像 tar 文件中，已传到到 NJU Box，你可以将任意一个下载到你的环境中使用。</li>
+<li>然后按照下面的示例命令一步一步操作：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># step0. assumming that the tar file &quot;a&#123;x&#125;_env_light_v&#123;y&#125;.tar&quot; is already downloaded into your private repo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># step1. run the given script to load the docker image (default the light one) and execute the container</span></span><br><span class="line">bash run_docker.sh <span class="comment"># or maybe you need run it with sudo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># step2. get into the repo path mounted into the container</span></span><br><span class="line"><span class="built_in">cd</span> a&#123;x&#125;_repo</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3. run the test_with_ref.py</span></span><br><span class="line">pytest test_with_ref.py</span><br></pre></td></tr></table></figure></li>
+<li>对于 Windows，如果你已经安装了 Docker，可以从 <code>run_docker.sh</code> 中提取核心的 Docker 命令并自行运行；或者你也可以使用一些技巧，比如 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/wsl/about">WSL</a> 或 <a target="_blank" rel="noopener" href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/">DinD</a>，来模拟类 Unix 的环境。</li>
+</ul>
+<div class="note warning">
+            <p><strong>注意</strong>: <code>test_toy.py</code> 和 <code>test_with_ref.py</code> 中的测试<strong>仅用于调试目的</strong>，它们可能<strong>并不代表</strong>我们在评分时使用的 <code>test_score.py</code> 中的实际测试用例。因此，请特别注意处理不同情况，尤其是一些 <strong>edge cases</strong>。</p>
+          </div>
+<h1 id="Submission"><a href="#Submission" class="headerlink" title="Submission"></a>Submission</h1><ul>
+<li>你需要通过 <code>git commit</code> 和 <code>git push</code> 将作业提交到该私有仓库的 <strong><code>main</code> 分支</strong>，包含作业要求的指定源文件，并确保在 <strong>hard deadline</strong> 之前完成提交，否则 <strong>逾期作业将被自动拒收</strong>。</li>
+<li>尽量 <strong>不要推送不必要的文件</strong>，尤其是像图片这样的大文件到仓库中。</li>
+<li>如果你因为一些特殊问题错过了截止时间，请直接联系老师（见 <a href="#Contact">Contact</a>）。</li>
+</ul>
+<div class="note info">
+            <p>我们会尽可能频繁地对你的中间提交进行预测试，以用于最终提交的评分参考。<br>每次预测试后，我们<strong>只会提供 score feedback</strong>（见 <a href="#Feedback">Feedback</a> 部分），以便你在 <strong>ddl</strong> 之前改进代码，争取更高的分数。</p>
+          </div>
+<h1 id="Scoring"><a href="#Scoring" class="headerlink" title="Scoring"></a>Scoring</h1><p>每个作业将根据评分范围 0~100 分进行评定。我们会下载你的代码，并通过运行 <code>test_script.sh</code> 脚本来执行 <code>test_score.py</code> 文件（该文件对你来说是不可见的空文件），在我们的本地机器上导入 Tasks 中指定的文件并运行一些测试用例。</p>
+<ul>
+<li>如果你在可选时间限制（optional time limit）内通过了所有测试，你将获得最高分 100 分。</li>
+<li>如果你在可选时间限制内未通过任何测试，或者程序运行出现异常，你将获得最低分 0 分。</li>
+<li>如果你在可选时间限制内只通过了部分测试，则你将获得介于 0~100 分 之间的分数，该分数是你通过的所有测试用例所对应分值的总和，具体得分标准见下表。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Score</th>
+<th>Other Info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task0 - Case1</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case2</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case3</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case4</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case5</td>
+<td>20</td>
+<td></td>
+</tr>
+<tr>
+<td>Total</td>
+<td>100</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="Feedback"><a href="#Feedback" class="headerlink" title="Feedback"></a>Feedback</h1><p>在评分完成后，我们会将你的得分情况以一个表格的形式写入一个新文件 <code>score.md</code> 中，并通过一个新的 commit 推送到你的仓库中，分支名为 <code>score-feedback</code>（这是一个临时分支，仅用于让你查看每次评分后各个测试用例的得分情况，<strong>请不要将其用于其他目的</strong>）。</p>
+<p><code>score.md</code> 文件内容示例：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Score</th>
+<th>Status</th>
+<th>Error Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task0 - Case1</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case2</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case3</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case4</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Task0 - Case5</td>
+<td>20</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>Total</td>
+<td>100</td>
+<td>😊</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>status icons 的含义如下:</p>
+<ul>
+<li>✅: passed the case</li>
+<li>❌: failed the case due to wrong answers</li>
+<li>🕛: failed the case due to timeout if the time limit is set</li>
+<li>❓: failed the case due to some exceptions (the error message will be shown at the corresponding <code>Error Message</code> cell)</li>
+<li>😊: all passed</li>
+<li>🥺: failed at least one case</li>
+</ul>
+<h1 id="Contact"><a href="#Contact" class="headerlink" title="Contact"></a>Contact</h1><p>记得关注老师的 Bilibili 账号，UID 为 390606417，观看<a target="_blank" rel="noopener" href="https://space.bilibili.com/390606417/lists?sid=3771310">线上课程</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/14/A1-matmul/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
+      <meta itemprop="name" content="DeepEngine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LLM-Assignment-Doc">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LLM-Blog/2025/06/14/A1-matmul/" class="post-title-link" itemprop="url">A1 matmul</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-06-14 12:57:11 / 修改时间：16:51:18" itemprop="dateCreated datePublished" datetime="2025-06-14T12:57:11+08:00">2025-06-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LLM-Blog/categories/Assignment/" itemprop="url" rel="index"><span itemprop="name">Assignment</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="Task-1-MalMul-with-multi-head-variant"><a href="#Task-1-MalMul-with-multi-head-variant" class="headerlink" title="Task 1: MalMul with multi-head variant"></a>Task 1: MalMul with multi-head variant</h4><p>在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：</p>
+<ul>
+<li><code>A1</code>：一个 3D 的输入张量，形状为 <code>[batch_size, seq_len, hidden_size]</code>，<code>batch_size</code> 表示序列的数量，<code>seqlen</code> 表示一个序列的最大长度，<code>hidden_size</code> 表示序列中每一个 <code>token</code> 拥有的维度。我们简写 <code>A1</code> 的形状为 <code>[b, s, h]</code>。</li>
+<li><code>W1</code>：一个 2D 的权重张量，形状为 <code>[hidden_size, embed_size]</code>，它表示一个投影矩阵，将任何行向量从 <code>hidden_size</code>-dim 投影到 <code>embed_size</code>-dim。我们简写 <code>W1</code> 的形状为 <code>[h, e]</code>。</li>
+</ul>
+<p>朴素的矩阵乘法仅对 <code>A1</code> 中 <code>batch_size</code> 维度，针对每个序列索引i，都执行 <code>O1[i] = A1[i] @ W1</code> 计算，从而得到形状为 <code>[b, s, e]</code> 的张量 <code>O1</code>。</p>
+<p>在多头矩阵乘法中，我们首先将输入张量 <code>A1</code> 和权重张量 <code>W1</code> 的 <code>h</code> 维度均分为 <code>num_heads</code> 个子维度（记为 <code>nh</code>，表示头的数量），由此得到形状为 <code>[b, s, nh, hd]</code> 的四维张量 <code>A2</code> 和形状为 <code>[nh, hd, e]</code> 的三维张量 <code>W2</code>。接下来，对于 <code>A2</code> 中 <code>batch_size</code> 维度下的每个序列，遍历其 <code>num_heads</code> 维度上的每个 <code>[s, hd]</code> 矩阵，并将其与 W2 中 <code>num_heads</code> 维度下对应的 <code>[hd, e]</code> 矩阵进行乘法运算。通过多头并行计算，最终输出一个形状为 <code>[b, s, nh, e]</code> 的四维张量 <code>O2</code>。</p>
+<h5 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task1</strong> 的部分，实现上述多头矩阵乘法的逻辑，输入张量 <code>A1</code> 和 <code>W1</code>，返回计算值 <code>O2</code>。</p>
+<div class="note info">
+            <ol><li>输入的张量是 A1 和 W1，你需要自己将其转换为 A2 和 W2 再进行计算，请注意 torch 中 <code>reshape</code>, <code>view</code>, <code>transpose</code>, <code>permute</code>等函数的用法和区别。</li><li>虽然逻辑上矩阵的乘法是用遍历进行计算的，但请勿使用 for 循环的方式进行实现，请自行查阅 pytorch 的计算函数，如 <code>@</code>, <code>torch.bmm</code> , <code>torch.mm</code> , <code>torch.matmul</code> , <code>torch.einsum</code> 等。</li></ol>
+          </div>
+<div class="note warning">
+            <ol><li>所有输入张量均在同一设备（CPU 或 CUDA）上从标准正态分布 N (0, 1) 随机初始化，具有相同的数据类型（float32、float16 或 bfloat16），并且在所有测试用例中均未设置 <code>require_grad</code>；</li><li>在所有测试用例中，<code>hidden_size</code> 均会被保证能被 <code>num_heads</code> 整除。</li></ol>
+          </div>
+<h4 id="Task-2-MalMul-with-importance"><a href="#Task-2-MalMul-with-importance" class="headerlink" title="Task 2: MalMul with importance"></a>Task 2: MalMul with importance</h4><p>在多头矩阵乘法的基础上，我们引入一个表示“重要性”的概率张量 <code>P</code>，其形状为 <code>[b, s]</code>。P 中的每个元素表示 <code>A1</code> 中对应位置的元素的重要程度。基于这个重要性概率，我们的目标是只对每个序列中的 “重要” 元素执行矩阵乘法运算。这些重要元素总共有<code>total_important_seq_len</code> 个，简记为 <code>t</code>，其计算结果会被收集到输出张量 <code>O3</code> 中，其形状为 <code>[t, nh, e]</code>。</p>
+<p>为了精确界定 “重要” 元素的范围，我们提供两个可选参数：</p>
+<ol>
+<li><code>top_p</code>：取值范围为 <code>[0., 1.]</code> 的浮点数。只有概率值大于或等于 <code>top_p</code> 的元素才被视为 “重要” 元素，默认值为 <code>1.0</code>。</li>
+<li><code>top_k</code>：取值范围为 <code>[1, ..., seq_len]</code> 的整数。对于批次中的每个序列，只将概率最高的 <code>top_k</code> 个元素视为 “重要” 元素。如果未设置 <code>top_k</code>（默认值为 <code>None</code>），则等价于 <code>top_k = seq_len</code>。</li>
+</ol>
+<p>注意，必须同时满足上述两点的元素才是重要元素。</p>
+<h5 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task2</strong> 的部分，实现上述重要性乘法。首先，你需要根据 <code>top_p</code> 和 <code>top_k</code> 的值，从 <code>A1</code> 中挑选出“重要”的元素，组成 <code>[t, h]</code> 的张量 <code>A3</code>，再仿造 <strong>Task1</strong> 中的多头矩阵乘法，输出 <code>[t, nh, e]</code> 的张量 <code>O3</code>。</p>
+<div class="note info">
+            <p>可以使用 <code>torch.topk</code> 计算 <code>topk</code> 个重要元素。</p>
+          </div>
+<div class="note warning">
+            <p>在所有测试用例中，<code>top_p</code> 和 <code>top_k</code> 参数均会被保证在各自有效范围内取值。</p>
+          </div>
+<h4 id="Task-3-MalMul-with-grad"><a href="#Task-3-MalMul-with-grad" class="headerlink" title="Task 3: MalMul with grad"></a>Task 3: MalMul with grad</h4><p>此外，如果提供了输出张量的可选梯度（记为 <code>dO3</code>，其形状与 <code>O3</code> 相同），我们还需要计算输入张量的梯度（记为 <code>dA1</code>，形状与 <code>A1</code> 相同）和权重张量的梯度（记为 <code>dW1</code>，形状与 <code>W1</code> 相同）。若未提供 <code>dO3</code>，则 <code>dA1</code> 和 <code>dW1</code> 均返回 <code>None</code>。</p>
+<h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task3</strong> 的部分，请参考 <strong>A0</strong> 中介绍的两种求梯度的方式，返回 <code>A1</code> 和 <code>W1</code> 的梯度。</p>
+<div class="note info">
+            <ol><li>若未提供 <code>grad_output</code> 参数，应避免计算梯度以提高效率并节省内存。</li><li>若提供了 <code>grad_output</code> 参数，可使用 PyTorch 的自动求导机制计算梯度，但需注意潜在的副作用，这些副作用可能会在测试中被测试。</li></ol>
+          </div>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/03/hello-world/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
+      <meta itemprop="name" content="DeepEngine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LLM-Assignment-Doc">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LLM-Blog/2025/06/03/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-06-03 18:35:38" itemprop="dateCreated datePublished" datetime="2025-06-03T18:35:38+08:00">2025-06-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">DeepEngine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LLM-Blog/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LLM-Blog/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DeepEngine</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div> -->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/LLM-Blog/lib/anime.min.js"></script>
+  <script src="/LLM-Blog/lib/velocity/velocity.min.js"></script>
+  <script src="/LLM-Blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LLM-Blog/js/utils.js"></script>
+
+<script src="/LLM-Blog/js/motion.js"></script>
+
+
+<script src="/LLM-Blog/js/schemes/pisces.js"></script>
+
+
+<script src="/LLM-Blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

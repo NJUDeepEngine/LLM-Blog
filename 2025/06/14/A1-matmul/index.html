@@ -215,11 +215,9 @@
 <div class="note info">
             <ol><li>输入的张量是 A1 和 W1，你需要自己将其转换为 A2 和 W2 再进行计算，请注意 torch 中 <code>reshape</code>, <code>view</code>, <code>transpose</code>, <code>permute</code>等函数的用法和区别。</li><li>虽然逻辑上矩阵的乘法是用遍历进行计算的，但请勿使用 for 循环的方式进行实现，请自行查阅 pytorch 的计算函数，如 <code>@</code>, <code>torch.bmm</code> , <code>torch.mm</code> , <code>torch.matmul</code> , <code>torch.einsum</code> 等。</li></ol>
           </div>
-
 <div class="note warning">
             <ol><li>所有输入张量均在同一设备（CPU 或 CUDA）上从标准正态分布 N (0, 1) 随机初始化，具有相同的数据类型（float32、float16 或 bfloat16），并且在所有测试用例中均未设置 <code>require_grad</code>；</li><li>在所有测试用例中，<code>hidden_size</code> 均会被保证能被 <code>num_heads</code> 整除。</li></ol>
           </div>
-
 <h4 id="Task-2-MalMul-with-importance"><a href="#Task-2-MalMul-with-importance" class="headerlink" title="Task 2: MalMul with importance"></a>Task 2: MalMul with importance</h4><p>在多头矩阵乘法的基础上，我们引入一个表示“重要性”的概率张量 <code>P</code>，其形状为 <code>[b, s]</code>。P 中的每个元素表示 <code>A1</code> 中对应位置的元素的重要程度。基于这个重要性概率，我们的目标是只对每个序列中的 “重要” 元素执行矩阵乘法运算。这些重要元素总共有<code>total_important_seq_len</code> 个，简记为 <code>t</code>，其计算结果会被收集到输出张量 <code>O3</code> 中，其形状为 <code>[t, nh, e]</code>。</p>
 <p>为了精确界定 “重要” 元素的范围，我们提供两个可选参数：</p>
 <ol>
@@ -231,11 +229,9 @@
 <div class="note info">
             <p>可以使用 <code>torch.topk</code> 计算 <code>topk</code> 个重要元素。</p>
           </div>
-
 <div class="note warning">
             <p>在所有测试用例中，<code>top_p</code> 和 <code>top_k</code> 参数均会被保证在各自有效范围内取值。</p>
           </div>
-
 <h4 id="Task-3-MalMul-with-grad"><a href="#Task-3-MalMul-with-grad" class="headerlink" title="Task 3: MalMul with grad"></a>Task 3: MalMul with grad</h4><p>此外，如果提供了输出张量的可选梯度（记为 <code>dO3</code>，其形状与 <code>O3</code> 相同），我们还需要计算输入张量的梯度（记为 <code>dA1</code>，形状与 <code>A1</code> 相同）和权重张量的梯度（记为 <code>dW1</code>，形状与 <code>W1</code> 相同）。若未提供 <code>dO3</code>，则 <code>dA1</code> 和 <code>dW1</code> 均返回 <code>None</code>。</p>
 <h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task3</strong> 的部分，请参考 <strong>A0</strong> 中介绍的两种求梯度的方式，返回 <code>A1</code> 和 <code>W1</code> 的梯度。</p>
 <div class="note info">
@@ -339,7 +335,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LLM-Blog/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -350,7 +346,7 @@
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -436,6 +432,61 @@
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
