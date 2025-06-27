@@ -1,5 +1,5 @@
 ---
-title: A0 onboarding
+title: A0 Onboarding
 date: 2025-06-10 16:54:20
 tags:
   - Environment
@@ -58,7 +58,13 @@ $$
 \text{Loss} = \sum_{i,j,k} \mathbf{Y}_{ijk}^2
 $$
 
-进一步，完整的 `forward` 过程即 $\mathbf{Y} = \mathbf{X} \times \mathbf{W}，\text{Loss} = \sum_{i,j,k} \mathbf{Y}_{ijk}^2$，我们首先给出对应的 `backward` 的计算过程：
+进一步，完整的 `forward` 过程即：
+
+$$
+\mathbf{Y} = \mathbf{X} \times \mathbf{W}，\text{Loss} = \sum_{i,j,k} \mathbf{Y}_{ijk}^2
+$$
+
+我们首先给出对应的 `backward` 的计算过程：
 
 $$
 \mathbf{G} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}} = 2\mathbf{Y} \in \mathbb{R}^{B \times H \times E}
