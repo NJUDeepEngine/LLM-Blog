@@ -322,7 +322,7 @@ s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}}
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/14/A0-onboarding/">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/14/A1-matmul/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
@@ -336,7 +336,107 @@ s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}}
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/LLM-Blog/2025/06/14/A0-onboarding/" class="post-title-link" itemprop="url">A0 onboarding</a>
+            <a href="/LLM-Blog/2025/06/14/A1-matmul/" class="post-title-link" itemprop="url">A1 matmul</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-06-14 12:57:11 / 修改时间：16:51:18" itemprop="dateCreated datePublished" datetime="2025-06-14T12:57:11+08:00">2025-06-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LLM-Blog/categories/Assignment/" itemprop="url" rel="index"><span itemprop="name">Assignment</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="Task-1-MalMul-with-multi-head-variant"><a href="#Task-1-MalMul-with-multi-head-variant" class="headerlink" title="Task 1: MalMul with multi-head variant"></a>Task 1: MalMul with multi-head variant</h4><p>在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：</p>
+<ul>
+<li><code>A1</code>：一个 3D 的输入张量，形状为 <code>[batch_size, seq_len, hidden_size]</code>，<code>batch_size</code> 表示序列的数量，<code>seqlen</code> 表示一个序列的最大长度，<code>hidden_size</code> 表示序列中每一个 <code>token</code> 拥有的维度。我们简写 <code>A1</code> 的形状为 <code>[b, s, h]</code>。</li>
+<li><code>W1</code>：一个 2D 的权重张量，形状为 <code>[hidden_size, embed_size]</code>，它表示一个投影矩阵，将任何行向量从 <code>hidden_size</code>-dim 投影到 <code>embed_size</code>-dim。我们简写 <code>W1</code> 的形状为 <code>[h, e]</code>。</li>
+</ul>
+<p>朴素的矩阵乘法仅对 <code>A1</code> 中 <code>batch_size</code> 维度，针对每个序列索引i，都执行 <code>O1[i] = A1[i] @ W1</code> 计算，从而得到形状为 <code>[b, s, e]</code> 的张量 <code>O1</code>。</p>
+<p>在多头矩阵乘法中，我们首先将输入张量 <code>A1</code> 和权重张量 <code>W1</code> 的 <code>h</code> 维度均分为 <code>num_heads</code> 个子维度（记为 <code>nh</code>，表示头的数量），由此得到形状为 <code>[b, s, nh, hd]</code> 的四维张量 <code>A2</code> 和形状为 <code>[nh, hd, e]</code> 的三维张量 <code>W2</code>。接下来，对于 <code>A2</code> 中 <code>batch_size</code> 维度下的每个序列，遍历其 <code>num_heads</code> 维度上的每个 <code>[s, hd]</code> 矩阵，并将其与 W2 中 <code>num_heads</code> 维度下对应的 <code>[hd, e]</code> 矩阵进行乘法运算。通过多头并行计算，最终输出一个形状为 <code>[b, s, nh, e]</code> 的四维张量 <code>O2</code>。</p>
+<h5 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task1</strong> 的部分，实现上述多头矩阵乘法的逻辑，输入张量 <code>A1</code> 和 <code>W1</code>，返回计算值 <code>O2</code>。</p>
+<div class="note info">
+            <ol><li>输入的张量是 A1 和 W1，你需要自己将其转换为 A2 和 W2 再进行计算，请注意 torch 中 <code>reshape</code>, <code>view</code>, <code>transpose</code>, <code>permute</code>等函数的用法和区别。</li><li>虽然逻辑上矩阵的乘法是用遍历进行计算的，但请勿使用 for 循环的方式进行实现，请自行查阅 pytorch 的计算函数，如 <code>@</code>, <code>torch.bmm</code> , <code>torch.mm</code> , <code>torch.matmul</code> , <code>torch.einsum</code> 等。</li></ol>
+          </div>
+<div class="note warning">
+            <ol><li>所有输入张量均在同一设备（CPU 或 CUDA）上从标准正态分布 N (0, 1) 随机初始化，具有相同的数据类型（float32、float16 或 bfloat16），并且在所有测试用例中均未设置 <code>require_grad</code>；</li><li>在所有测试用例中，<code>hidden_size</code> 均会被保证能被 <code>num_heads</code> 整除。</li></ol>
+          </div>
+<h4 id="Task-2-MalMul-with-importance"><a href="#Task-2-MalMul-with-importance" class="headerlink" title="Task 2: MalMul with importance"></a>Task 2: MalMul with importance</h4><p>在多头矩阵乘法的基础上，我们引入一个表示“重要性”的概率张量 <code>P</code>，其形状为 <code>[b, s]</code>。P 中的每个元素表示 <code>A1</code> 中对应位置的元素的重要程度。基于这个重要性概率，我们的目标是只对每个序列中的 “重要” 元素执行矩阵乘法运算。这些重要元素总共有<code>total_important_seq_len</code> 个，简记为 <code>t</code>，其计算结果会被收集到输出张量 <code>O3</code> 中，其形状为 <code>[t, nh, e]</code>。</p>
+<p>为了精确界定 “重要” 元素的范围，我们提供两个可选参数：</p>
+<ol>
+<li><code>top_p</code>：取值范围为 <code>[0., 1.]</code> 的浮点数。只有概率值大于或等于 <code>top_p</code> 的元素才被视为 “重要” 元素，默认值为 <code>1.0</code>。</li>
+<li><code>top_k</code>：取值范围为 <code>[1, ..., seq_len]</code> 的整数。对于批次中的每个序列，只将概率最高的 <code>top_k</code> 个元素视为 “重要” 元素。如果未设置 <code>top_k</code>（默认值为 <code>None</code>），则等价于 <code>top_k = seq_len</code>。</li>
+</ol>
+<p>注意，必须同时满足上述两点的元素才是重要元素。</p>
+<h5 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task2</strong> 的部分，实现上述重要性乘法。首先，你需要根据 <code>top_p</code> 和 <code>top_k</code> 的值，从 <code>A1</code> 中挑选出“重要”的元素，组成 <code>[t, h]</code> 的张量 <code>A3</code>，再仿造 <strong>Task1</strong> 中的多头矩阵乘法，输出 <code>[t, nh, e]</code> 的张量 <code>O3</code>。</p>
+<div class="note info">
+            <p>可以使用 <code>torch.topk</code> 计算 <code>topk</code> 个重要元素。</p>
+          </div>
+<div class="note warning">
+            <p>在所有测试用例中，<code>top_p</code> 和 <code>top_k</code> 参数均会被保证在各自有效范围内取值。</p>
+          </div>
+<h4 id="Task-3-MalMul-with-grad"><a href="#Task-3-MalMul-with-grad" class="headerlink" title="Task 3: MalMul with grad"></a>Task 3: MalMul with grad</h4><p>此外，如果提供了输出张量的可选梯度（记为 <code>dO3</code>，其形状与 <code>O3</code> 相同），我们还需要计算输入张量的梯度（记为 <code>dA1</code>，形状与 <code>A1</code> 相同）和权重张量的梯度（记为 <code>dW1</code>，形状与 <code>W1</code> 相同）。若未提供 <code>dO3</code>，则 <code>dA1</code> 和 <code>dW1</code> 均返回 <code>None</code>。</p>
+<h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task3</strong> 的部分，请参考 <strong>A0</strong> 中介绍的两种求梯度的方式，返回 <code>A1</code> 和 <code>W1</code> 的梯度。</p>
+<div class="note info">
+            <ol><li>若未提供 <code>grad_output</code> 参数，应避免计算梯度以提高效率并节省内存。</li><li>若提供了 <code>grad_output</code> 参数，可使用 PyTorch 的自动求导机制计算梯度，但需注意潜在的副作用，这些副作用可能会在测试中被测试。</li></ol>
+          </div>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/10/A0-onboarding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
+      <meta itemprop="name" content="DeepEngine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LLM-Assignment-Doc">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LLM-Blog/2025/06/10/A0-onboarding/" class="post-title-link" itemprop="url">A0 onboarding</a>
         </h2>
 
         <div class="post-meta">
@@ -346,14 +446,14 @@ s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}}
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2025-06-14 16:54:20" itemprop="dateCreated datePublished" datetime="2025-06-14T16:54:20+08:00">2025-06-14</time>
+              <time title="创建时间：2025-06-10 16:54:20" itemprop="dateCreated datePublished" datetime="2025-06-10T16:54:20+08:00">2025-06-10</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-06-27 13:52:44" itemprop="dateModified" datetime="2025-06-27T13:52:44+08:00">2025-06-27</time>
+                <time title="修改时间：2025-06-27 14:04:49" itemprop="dateModified" datetime="2025-06-27T14:04:49+08:00">2025-06-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -593,106 +693,6 @@ s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}}
 <li>🥺: failed at least one case</li>
 </ul>
 <h1 id="Contact"><a href="#Contact" class="headerlink" title="Contact"></a>Contact</h1><p>记得关注老师的 Bilibili 账号，UID 为 390606417，观看<a target="_blank" rel="noopener" href="https://space.bilibili.com/390606417/lists?sid=3771310">线上课程</a>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/06/14/A1-matmul/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
-      <meta itemprop="name" content="DeepEngine">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LLM-Assignment-Doc">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/LLM-Blog/2025/06/14/A1-matmul/" class="post-title-link" itemprop="url">A1 matmul</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2025-06-14 12:57:11 / 修改时间：16:51:18" itemprop="dateCreated datePublished" datetime="2025-06-14T12:57:11+08:00">2025-06-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LLM-Blog/categories/Assignment/" itemprop="url" rel="index"><span itemprop="name">Assignment</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="Task-1-MalMul-with-multi-head-variant"><a href="#Task-1-MalMul-with-multi-head-variant" class="headerlink" title="Task 1: MalMul with multi-head variant"></a>Task 1: MalMul with multi-head variant</h4><p>在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：</p>
-<ul>
-<li><code>A1</code>：一个 3D 的输入张量，形状为 <code>[batch_size, seq_len, hidden_size]</code>，<code>batch_size</code> 表示序列的数量，<code>seqlen</code> 表示一个序列的最大长度，<code>hidden_size</code> 表示序列中每一个 <code>token</code> 拥有的维度。我们简写 <code>A1</code> 的形状为 <code>[b, s, h]</code>。</li>
-<li><code>W1</code>：一个 2D 的权重张量，形状为 <code>[hidden_size, embed_size]</code>，它表示一个投影矩阵，将任何行向量从 <code>hidden_size</code>-dim 投影到 <code>embed_size</code>-dim。我们简写 <code>W1</code> 的形状为 <code>[h, e]</code>。</li>
-</ul>
-<p>朴素的矩阵乘法仅对 <code>A1</code> 中 <code>batch_size</code> 维度，针对每个序列索引i，都执行 <code>O1[i] = A1[i] @ W1</code> 计算，从而得到形状为 <code>[b, s, e]</code> 的张量 <code>O1</code>。</p>
-<p>在多头矩阵乘法中，我们首先将输入张量 <code>A1</code> 和权重张量 <code>W1</code> 的 <code>h</code> 维度均分为 <code>num_heads</code> 个子维度（记为 <code>nh</code>，表示头的数量），由此得到形状为 <code>[b, s, nh, hd]</code> 的四维张量 <code>A2</code> 和形状为 <code>[nh, hd, e]</code> 的三维张量 <code>W2</code>。接下来，对于 <code>A2</code> 中 <code>batch_size</code> 维度下的每个序列，遍历其 <code>num_heads</code> 维度上的每个 <code>[s, hd]</code> 矩阵，并将其与 W2 中 <code>num_heads</code> 维度下对应的 <code>[hd, e]</code> 矩阵进行乘法运算。通过多头并行计算，最终输出一个形状为 <code>[b, s, nh, e]</code> 的四维张量 <code>O2</code>。</p>
-<h5 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task1</strong> 的部分，实现上述多头矩阵乘法的逻辑，输入张量 <code>A1</code> 和 <code>W1</code>，返回计算值 <code>O2</code>。</p>
-<div class="note info">
-            <ol><li>输入的张量是 A1 和 W1，你需要自己将其转换为 A2 和 W2 再进行计算，请注意 torch 中 <code>reshape</code>, <code>view</code>, <code>transpose</code>, <code>permute</code>等函数的用法和区别。</li><li>虽然逻辑上矩阵的乘法是用遍历进行计算的，但请勿使用 for 循环的方式进行实现，请自行查阅 pytorch 的计算函数，如 <code>@</code>, <code>torch.bmm</code> , <code>torch.mm</code> , <code>torch.matmul</code> , <code>torch.einsum</code> 等。</li></ol>
-          </div>
-<div class="note warning">
-            <ol><li>所有输入张量均在同一设备（CPU 或 CUDA）上从标准正态分布 N (0, 1) 随机初始化，具有相同的数据类型（float32、float16 或 bfloat16），并且在所有测试用例中均未设置 <code>require_grad</code>；</li><li>在所有测试用例中，<code>hidden_size</code> 均会被保证能被 <code>num_heads</code> 整除。</li></ol>
-          </div>
-<h4 id="Task-2-MalMul-with-importance"><a href="#Task-2-MalMul-with-importance" class="headerlink" title="Task 2: MalMul with importance"></a>Task 2: MalMul with importance</h4><p>在多头矩阵乘法的基础上，我们引入一个表示“重要性”的概率张量 <code>P</code>，其形状为 <code>[b, s]</code>。P 中的每个元素表示 <code>A1</code> 中对应位置的元素的重要程度。基于这个重要性概率，我们的目标是只对每个序列中的 “重要” 元素执行矩阵乘法运算。这些重要元素总共有<code>total_important_seq_len</code> 个，简记为 <code>t</code>，其计算结果会被收集到输出张量 <code>O3</code> 中，其形状为 <code>[t, nh, e]</code>。</p>
-<p>为了精确界定 “重要” 元素的范围，我们提供两个可选参数：</p>
-<ol>
-<li><code>top_p</code>：取值范围为 <code>[0., 1.]</code> 的浮点数。只有概率值大于或等于 <code>top_p</code> 的元素才被视为 “重要” 元素，默认值为 <code>1.0</code>。</li>
-<li><code>top_k</code>：取值范围为 <code>[1, ..., seq_len]</code> 的整数。对于批次中的每个序列，只将概率最高的 <code>top_k</code> 个元素视为 “重要” 元素。如果未设置 <code>top_k</code>（默认值为 <code>None</code>），则等价于 <code>top_k = seq_len</code>。</li>
-</ol>
-<p>注意，必须同时满足上述两点的元素才是重要元素。</p>
-<h5 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task2</strong> 的部分，实现上述重要性乘法。首先，你需要根据 <code>top_p</code> 和 <code>top_k</code> 的值，从 <code>A1</code> 中挑选出“重要”的元素，组成 <code>[t, h]</code> 的张量 <code>A3</code>，再仿造 <strong>Task1</strong> 中的多头矩阵乘法，输出 <code>[t, nh, e]</code> 的张量 <code>O3</code>。</p>
-<div class="note info">
-            <p>可以使用 <code>torch.topk</code> 计算 <code>topk</code> 个重要元素。</p>
-          </div>
-<div class="note warning">
-            <p>在所有测试用例中，<code>top_p</code> 和 <code>top_k</code> 参数均会被保证在各自有效范围内取值。</p>
-          </div>
-<h4 id="Task-3-MalMul-with-grad"><a href="#Task-3-MalMul-with-grad" class="headerlink" title="Task 3: MalMul with grad"></a>Task 3: MalMul with grad</h4><p>此外，如果提供了输出张量的可选梯度（记为 <code>dO3</code>，其形状与 <code>O3</code> 相同），我们还需要计算输入张量的梯度（记为 <code>dA1</code>，形状与 <code>A1</code> 相同）和权重张量的梯度（记为 <code>dW1</code>，形状与 <code>W1</code> 相同）。若未提供 <code>dO3</code>，则 <code>dA1</code> 和 <code>dW1</code> 均返回 <code>None</code>。</p>
-<h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task3</strong> 的部分，请参考 <strong>A0</strong> 中介绍的两种求梯度的方式，返回 <code>A1</code> 和 <code>W1</code> 的梯度。</p>
-<div class="note info">
-            <ol><li>若未提供 <code>grad_output</code> 参数，应避免计算梯度以提高效率并节省内存。</li><li>若提供了 <code>grad_output</code> 参数，可使用 PyTorch 的自动求导机制计算梯度，但需注意潜在的副作用，这些副作用可能会在测试中被测试。</li></ol>
-          </div>
 
       
     </div>
