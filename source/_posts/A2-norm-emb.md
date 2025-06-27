@@ -127,7 +127,7 @@ $$
 n \in \{0, 1, \ldots, L - 1\}
 \tag{5}
 $$
-其中，`L` 表示序列长度，`d` 表示隐藏层维度，`base` 是一个人为设定的大整数，通常取值为10000（请参考原始论文），$\beta$ 是三角函数基的波长或周期的幂次基数，随着维度 `i` 的增大而按几何级数增长，其形式为 $\beta ^ i$，其中 $i=0,1,\ldots,d/2$。
+其中，`L` 表示序列长度，`d` 表示隐藏层维度，`base` 是一个人为设定的大整数，通常取值为10000（请参考原始论文），$\beta$ 是三角函数基的波长或周期的幂次基数，随着维度 `i` 的增大而按几何级数增长，其形式为 $\beta ^ i$，其中 $i=0,1,\ldots,\frac{d}{2}-1$。
 
 相比之下，旋转位置编码（Rotary Position Embedding，简称 RoPE）在处理长序列时提供了更稳定的方案。它在具备绝对位置信息感知能力的同时，能够捕捉相对位置模式，因此被广泛应用于当前的主流开源大模型（如 LLaMA，ChatCLM）中。随着研究的推进，RoPE 逐渐取代了原始的 SinPE、可学习位置编码（Learnable PE）以及相对位置编码（Relative PE），成为当前 Transformer 结构中位置编码的主流选择。
 
@@ -159,11 +159,139 @@ s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}}
 $$
 在 **Task4** 中，你需要像 `Llama` 一样实现 `NTKAwareRoPE` 模块，但是，有一些差异如下：
 
-- 标准的 RoPE 模块在前向传播时仅返回余弦/正弦基张量，形状为 `[seqlen, head_dim]`，该参数对记作 `(C, S)`，形状记作 `[s, hd]`，实际的旋转编码操作是在另一个独立的函数 `apply_rotary_pos_emb` 完成。
+- 标准的 RoPE 模块在前向传播时仅返回余弦/正弦基张量，形状为 `[seqlen, head_dim]`，该参数对记作 `(C, S)`，分别存储 $\sin{n\theta^i}$ 和  $\cos{n\theta^i}$（请参考 $(5)(6)$ 式中对 $n,\theta$ 的定义）。实际的旋转编码操作是在另一个独立的函数 `apply_rotary_pos_emb` 完成。
 - 我们遵循这种设计模式：你需要在 `src/functional.py` 中实现 `apply_rotary_pos_emb` 函数，该函数会在 `src/modeling/pos_emb.py` 中导入，并在 `NTKAwareRoPE` 的 `forward` 方法中被调用。与标准做法不同的是，`NTKAwareRoPE` 的 `forward` 方法不仅返回 `(C, S)` 的基张量，还应对输入张量 `X` 应用旋转编码并返回嵌入后的输出张量 `E`，其中：
   - 输入张量 `X` 的形状为 `[batch_size, seqlen, num_heads, head_dim]`，记作 `[b, s, nh, hd]`；
   - 输出张量 `E` 的形状与 `X` 的形状相同，表示应用旋转编码后的结果。
-- 另一个问题是，初始化 `NTKAwareRoPE` 时会提供一个训练阶段使用的最大序列长度（记作 `ms`）和一个缩放比例（记作 `k`），此时我们可以预先计算好 `(C, S)`，其形状为 `[es, hd]`，其中 `es = ms x k` 表示最大支持的拓展序列长度。因此，当有一个输入张量 `X_` 的实际序列长度 `s_` 超过了 `es`，即 `s_ > es`，我们必须动态重新计算一对新的 `(C_, S_)`，以确保旋转编码操作可以适用于这类超长输入。
+
+- 由于 **RoPE** 矩阵的稀疏性，直接用矩阵乘法来实现会很浪费算力，推荐使用 $(8)$ 中的方法来实现标准 **RoPE**。其中，$\bigotimes$ 是逐位相乘，并且可以注意到 $(8)$ 中，$X$ 按 $(x_0,x_1),(x_2,x_3),\cdots$ 的顺序进行分组。而 `Llama` 和 `ChatGLM` 的 **RoPE** 模块对 $X$ 的顺序进行了重组，也即按 $(x_0,x_{\frac{d}{2}}),(x_1,x_{\frac{d}{2}+1}),\cdots$ 的顺序进行分组，请使用 $(9)$ 中的方法实现 **Task4** 中的 **RoPE**。
+
+  {% note info%}
+
+  余弦\正弦参数对 `(C, S)` 也要做相应调整。
+
+  {% endnote %}
+
+$$
+\begin{pmatrix}
+x_0 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_1 \vphantom{\cos{\left(n\theta^0\right)}} \cr
+x_2 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_3 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+\vdots \cr
+x_{d-2} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}\cr
+x_{d-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
+\end{pmatrix}
+\quad
+\bigotimes
+\quad
+\begin{pmatrix}
+\cos{\left(n\theta^0\right)} \cr
+\cos{\left(n\theta^0\right)} \cr
+\cos{\left(n\theta^1\right)} \cr
+\cos{\left(n\theta^1\right)} \cr
+\vdots \cr
+\cos\left(n\theta^{\frac{d}{2}-1}\right) \cr
+\cos\left(n\theta^{\frac{d}{2}-1}\right)
+\end{pmatrix}
+\quad
++
+\quad
+\begin{pmatrix}
+-x_1 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_0 \vphantom{\cos{\left(n\theta^0\right)}} \cr
+-x_3 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_2 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+\vdots \cr
+-x_{d-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}\cr
+x_{d-2} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
+\end{pmatrix}
+\quad
+\bigotimes
+\quad
+\begin{pmatrix}
+\sin{\left(n\theta^0\right)} \cr
+\sin{\left(n\theta^0\right)} \cr
+\sin{\left(n\theta^1\right)} \cr
+\sin{\left(n\theta^1\right)} \cr
+\vdots \cr
+\sin\left(n\theta^{\frac{d}{2}-1}\right) \cr
+\sin\left(n\theta^{\frac{d}{2}-1}\right)
+\end{pmatrix}
+\tag{8}
+$$
+
+
+$$
+\begin{pmatrix}
+x_0 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_1 \vphantom{\cos{\left(n\theta^0\right)}} \cr
+x_2 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_3 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+\vdots \cr
+x_{\frac{d}{2}-1} \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_{\frac{d}{2}} \vphantom{\cos{\left(n\theta^0\right)}} \cr
+x_{\frac{d}{2}+1} \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_{\frac{d}{2}+2} \vphantom{\cos{\left(n\theta^0\right)}}\cr
+\vdots \cr
+x_{d-2} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}\cr
+x_{d-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
+\end{pmatrix}
+\quad
+\bigotimes
+\quad
+\begin{pmatrix}
+\cos{\left(n\theta^0\right)} \cr
+\cos{\left(n\theta^1\right)} \cr
+\cos{\left(n\theta^2\right)} \cr
+\cos{\left(n\theta^3\right)} \cr
+\vdots \cr
+\cos\left(n\theta^{\frac{d}{2}-1}\right) \cr
+\cos{\left(n\theta^0\right)} \cr
+\cos{\left(n\theta^1\right)} \cr
+\cos{\left(n\theta^2\right)} \cr
+\vdots \cr
+\cos\left(n\theta^{\frac{d}{2}-2}\right) \cr
+\cos\left(n\theta^{\frac{d}{2}-1}\right)
+\end{pmatrix}
+\quad
++
+\quad
+\begin{pmatrix}
+-x_{\frac{d}{2}} \vphantom{\cos{\left(n\theta^0\right)}}\cr
+-x_{\frac{d}{2}+1} \vphantom{\cos{\left(n\theta^0\right)}} \cr
+-x_{\frac{d}{2}+2} \vphantom{\cos{\left(n\theta^0\right)}}\cr
+-x_{\frac{d}{2}+3} \vphantom{\cos{\left(n\theta^0\right)}}\cr
+\vdots \cr
+-x_{d-1} \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_0 \vphantom{\cos{\left(n\theta^0\right)}} \cr
+x_1 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+x_2 \vphantom{\cos{\left(n\theta^0\right)}}\cr
+\vdots \cr
+x_{\frac{d}{2}-2} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}\cr
+x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
+\end{pmatrix}
+\quad
+\bigotimes
+\quad
+\begin{pmatrix}
+\sin{\left(n\theta^0\right)} \cr
+\sin{\left(n\theta^1\right)} \cr
+\sin{\left(n\theta^2\right)} \cr
+\sin{\left(n\theta^3\right)} \cr
+\vdots \cr
+\sin\left(n\theta^{\frac{d}{2}-1}\right) \cr
+\sin{\left(n\theta^0\right)} \cr
+\sin{\left(n\theta^1\right)} \cr
+\sin{\left(n\theta^2\right)} \cr
+\vdots \cr
+\sin\left(n\theta^{\frac{d}{2}-2}\right) \cr
+\sin\left(n\theta^{\frac{d}{2}-1}\right)
+\end{pmatrix}
+\tag{9}
+$$
+
+- 另一个问题是，初始化 `NTKAwareRoPE` 时会提供一个训练阶段使用的最大序列长度（记作 `ms`）和一个缩放比例（记作 `k`，也即 $\kappa$），此时我们可以预先计算好 `(C, S)`，其形状为 `[es, hd]`，其中 `es = ms x k` 表示最大支持的拓展序列长度。因此，当有一个输入张量 `X_` 的实际序列长度 `s_` 超过了 `es`，即 `s_ > es`，我们必须动态重新计算一对新的 `(C_, S_)`，以确保旋转编码操作可以适用于这类超长输入。
 - 但这里有两个问题：
   1. 当需要重新计算新的余弦/正弦基 `(C', S')` 时，我们应如何为输入张量 `X'` 确定新的缩放比例 `k'` ？
   2. 当遇到这类超长序列时，我们是否应该每次仅计算并使用该输入所需的 `(C', S')`，同时保留原始的缩放比例 `k` 及其对应的 `(C, S)` 用于常规输入？或者，我们应该每次都更新当前的 `k` 及其对应的 `(C, S)` 为新的 `k'` 和 `(C', S')` ？
