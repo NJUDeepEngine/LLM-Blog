@@ -556,7 +556,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/LLM-Blog/2025/06/10/A0-onboarding/" class="post-title-link" itemprop="url">A0 onboarding</a>
+            <a href="/LLM-Blog/2025/06/10/A0-onboarding/" class="post-title-link" itemprop="url">A0 Onboarding</a>
         </h2>
 
         <div class="post-meta">
@@ -573,7 +573,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-06-27 14:04:49" itemprop="dateModified" datetime="2025-06-27T14:04:49+08:00">2025-06-27</time>
+                <time title="修改时间：2025-06-27 14:39:15" itemprop="dateModified" datetime="2025-06-27T14:39:15+08:00">2025-06-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -626,7 +626,9 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
 </ul>
 <p>我们进一步定义一个标量损失函数 <code>loss = (Y ** 2).sum()</code>，即：</p>
 <script type="math/tex; mode=display">
-\text{Loss} = \sum_{i,j,k} \mathbf{Y}_{ijk}^2</script><p>进一步，完整的 <code>forward</code> 过程即 $\mathbf{Y} = \mathbf{X} \times \mathbf{W}，\text{Loss} = \sum<em>{i,j,k} \mathbf{Y}</em>{ijk}^2$，我们首先给出对应的 <code>backward</code> 的计算过程：</p>
+\text{Loss} = \sum_{i,j,k} \mathbf{Y}_{ijk}^2</script><p>进一步，完整的 <code>forward</code> 过程即：</p>
+<script type="math/tex; mode=display">
+\mathbf{Y} = \mathbf{X} \times \mathbf{W}，\text{Loss} = \sum_{i,j,k} \mathbf{Y}_{ijk}^2</script><p>我们首先给出对应的 <code>backward</code> 的计算过程：</p>
 <script type="math/tex; mode=display">
 \mathbf{G} = \frac{\partial \text{Loss}}{\partial \mathbf{Y}} = 2\mathbf{Y} \in \mathbb{R}^{B \times H \times E}</script><script type="math/tex; mode=display">
 \frac{\partial \text{Loss}}{\partial \mathbf{X}} = \mathbf{G} \times \mathbf{W}^\top = 2\mathbf{Y} \times \mathbf{W}^\top \in \mathbb{R}^{B \times H \times D}</script><script type="math/tex; mode=display">
