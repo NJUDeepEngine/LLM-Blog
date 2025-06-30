@@ -28,7 +28,7 @@
 <meta property="og:description" content="对于本次作业，我们将继续 Modeling 任务，以帮助你更深入地理解 Transformer 的各个组成模块。本次将特别关注 Transformer 结构核心的关键层之一：MLP 层。 Task 1: Dense MLPMulti-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复杂模式和非线性关系的任务。它已被广泛应用于基于 Transformer">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-06-29T13:54:26.000Z">
-<meta property="article:modified_time" content="2025-06-30T03:42:58.867Z">
+<meta property="article:modified_time" content="2025-06-30T09:37:16.053Z">
 <meta property="article:author" content="DeepEngine">
 <meta property="article:tag" content="MLP">
 <meta property="article:tag" content="LoRA">
@@ -187,7 +187,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-06-30 11:42:58" itemprop="dateModified" datetime="2025-06-30T11:42:58+08:00">2025-06-30</time>
+                <time title="修改时间：2025-06-30 17:37:16" itemprop="dateModified" datetime="2025-06-30T17:37:16+08:00">2025-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -222,11 +222,11 @@
 </ul>
 <h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2><p><strong>完成 <code>src/modeling/mlp.py</code> 中的 <code>DenseMLPWithLoRA</code> 模块</strong>，实现上述定义的 GLU-style MLP 模块，具体细节包括：</p>
 <ul>
-<li>对于 <code>DenseMLPWithLoRA</code> 模块，激活函数 $\phi(·)$ 是可配置的，通过传入名为 <code>activation_type</code> 的参数进行指定，该参数作为 <code>src/modeling/mlp.py</code> 中已定义枚举类 <code>MLPActivationType</code> 的一个实例。<code>activation_type</code> 与激活函数之间的映射关系，参考了参考文献中提供的 GLU Variants 论文以及部分 PyTorch 的实现方式。##TODO 完善</li>
+<li>对于 <code>DenseMLPWithLoRA</code> 模块，激活函数 $\phi(·)$ 是可配置的，通过传入名为 <code>activation_type</code> 的参数进行指定，该参数作为 <code>src/modeling/mlp.py</code> 中已定义枚举类 <code>MLPActivationType</code> 的一个实例。<code>activation_type</code> 与激活函数之间的映射关系，参考了参考文献中提供的 GLU Variants 论文以及部分 PyTorch 的实现方式。</li>
 <li>同样，作为一个可学习的模块，你需要为 <code>DenseMLPWithLoRA</code> 模块实现 <code>reset_parameters</code> 方法，用于对三个投影矩阵进行初始化，初始化方式为从<strong>正态分布</strong>中采样。但与之前的 <code>Norm</code> 层和 <code>Embedding</code> 层不同，对于投影矩阵的初始化，我们通常采用 <code>Xavier Initialization</code> 或 <code>Kaiming Initialization</code>（具体细节可参考参考文献）:<ul>
 <li>如果 <code>activation_type</code> 使用 <code>MLPActivationType.SIGMOID</code> 或 <code>MLPActivationType.BILINEAR</code>，则使用 <code>Xavier Initialization</code>；</li>
 <li>否则，对于其余 <code>ReLU-family</code> 的激活函数，则使用 <code>Kaiming Initialization</code>；</li>
-<li>注意，当指定 <code>ReLU-family</code> 的激活函数时，要求使用 <code>Kaiming Initialization</code> 方法（uniform 或 norm），此时，<strong>我们使用 <code>fan_in mode</code></strong>，即 <code>Kaiming Initialization</code> 中标准差 std 应该由 $\sqrt \frac{2}{\text{fan_in}}$ 得到。但实际上，Pytorch 的 <code>nn.Linear</code> 模块初始化的参数矩阵其 <code>shape</code> 是 $\text{[out_features, in_features]}$，而 Pytorch 的 <code>Kaiming Initialization</code> 方法也保持了这个习惯。所以当你在实现 <code>reset_parameters</code> 时请特别注意这一点。</li>
+<li>注意，当指定 <code>ReLU-family</code> 的激活函数时，要求使用 <code>Kaiming Initialization</code> 方法（uniform 或 norm），此时，<strong>我们约定使用 <code>fan_in mode</code></strong>，即 <code>Kaiming Initialization</code> 中标准差 std 应该由 $\sqrt \frac{2}{\text{fan_in}}$ 得到。但实际上，Pytorch 的 <code>nn.Linear</code> 模块初始化的参数矩阵其 <code>shape</code> 是 $\text{[out_features, in_features]}$，而 Pytorch 的 <code>Kaiming Initialization</code> 方法也保持了这个习惯。所以当你在实现 <code>reset_parameters</code> 时请特别注意这一点。</li>
 </ul>
 </li>
 <li>同样，我们提供一个基随机数种子 <code>init_base_seed</code>，为了避免不同投影矩阵具有相同的初始化结果，你需要为每个投影矩阵分配一个唯一的 seed 偏移量，具体而言：<ul>
@@ -250,7 +250,7 @@
 <p>基于以上内容，带 LoRA adapters 的 MLP 模块的计算可以分解为如下公式，其中引入了标准的 <code>Dropout</code> 层（dropout rate 为 $p$）来进一步增强 $\Delta(\mathbf{W})$ 的稀疏性：</p>
 <script type="math/tex; mode=display">
 \text{MLP}_{\text{LoRA}}(\mathbf{X}) = \text{MLP}(\mathbf{X}) + \text{Dropout}_p(\mathbf{X} \times \Delta(\mathbf{W})) = \text{MLP}(\mathbf{X}) + \text{Dropout}_p(\frac{\alpha}{r}\mathbf{X} \times \mathbf{A}_{\text{r}} \times \mathbf{B}_\text{r})</script><p>通过这种方式，我们只需要在监督微调（SFT）过程中训练可学习的 $\mathbf{A}_r$ 和 $\mathbf{B}_r$，而冻结所有其他预训练的投影矩阵，从而实现参数高效的微调策略。</p>
-<h2 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h2><h2 id="TODO-是否区分两个class"><a href="#TODO-是否区分两个class" class="headerlink" title="TODO 是否区分两个class"></a>TODO 是否区分两个class</h2><p>在满足 Task1 的要求基础上，<strong>进一步完善 <code>src/modeling/mlp.py</code> 中的 <code>DenseMLPWithLoRA</code> 模块</strong>，实现上述定义的 GLU-style MLP with LoRA Adapters 模块，具体细节包括：</p>
+<h2 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h2><p>在满足 Task1 的要求基础上，<strong>进一步完善 <code>src/modeling/mlp.py</code> 中的 <code>DenseMLPWithLoRA</code> 模块</strong>，实现上述定义的 GLU-style MLP with LoRA Adapters 模块，具体细节包括：</p>
 <ul>
 <li>无论是使用 <code>Xavier Initialization</code> 还是 <code>Kaiming Initialization</code>，$\mathbf{A}_{\text{r}}$ 和 $\mathbf{B}_\text{r}$ 都应从 <strong>uniform 分布</strong>中进行初始化。</li>
 <li>我们额外提供了一个 <code>lora_init_base_seed</code> 参数，用于控制 LoRA 相关参数矩阵的初始化，具体而言：<ul>
@@ -263,7 +263,7 @@
 <div class="note warning">
             <ol><li>本任务中对 LoRA 的用法进行了简化，即整个 MLP 模块中只应用一次 LoRA。但在实际工程中，更推荐为 MLP 模块中的每个线性投影矩阵分别设计一个 LoRA 适配器。</li><li>参数 <code>lora_rank</code> 保证在有效范围 $[0, min(h, ffh)]$ 之内，若 <code>lora_rank = 0</code>，你应跳过任何与 LoRA 有关的逻辑，即 LoRA 是 <code>DenseMLPWithLoRA</code> 中的可选模块。</li><li>参数 <code>lora_alpha</code> 是一个正缩放因子，默认为 <code>None</code> 时，表示应将其设置为与 <code>lora_rank</code> 相同的值。</li><li>你当然可以参考 LLaMA、ChatGLM、PEFT 等开源项目中如何实现（带 LoRA ）MLP 模块，具体内容可见参考文献。但要注意：本任务中所列的具体要求与这些项目实现略有不同，请严格按照当前任务说明进行设计与实现。</li></ol>
           </div>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>综上，你需要实现 <code>DenseMLPWithLoRA</code> 模块，其功能包括：</p>
+<h1 id="Dense-MLP-小结"><a href="#Dense-MLP-小结" class="headerlink" title="Dense MLP 小结"></a>Dense MLP 小结</h1><p>综上，你需要实现 <code>DenseMLPWithLoRA</code> 模块，其功能包括：</p>
 <ol>
 <li>初始化所有可学习参数矩阵，其中包括：<ul>
 <li>基本的投影矩阵（由 <code>init_base_seed</code> 控制）；</li>
@@ -273,8 +273,54 @@
 <li>接收输入 X，执行 GLU-style MLP with LoRA adapters 的 forward 计算过程，其中激活函数由 <code>activation_type</code> 指定；</li>
 <li>最后输出的 <code>hidden_states</code>，记为 O 应与 X 具有相同形状。</li>
 </ol>
-<h1 id="Task-3-Sparse-MLP"><a href="#Task-3-Sparse-MLP" class="headerlink" title="Task 3: Sparse MLP"></a>Task 3: Sparse MLP</h1><h2 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h2><p><strong>完成 <code>src/modeling/mlp.py</code> 中的 <code>SparseMLPWithLoRA</code> 模块</strong>，具体细节包括：</p>
-<p>以下是一些可能对你完成该任务有帮助的参考资料，也可以用于加深或拓宽你对 dense MLP 层、LoRA Adapters 和激活函数的理解：</p>
+<h1 id="Task-3-Sparse-MLP"><a href="#Task-3-Sparse-MLP" class="headerlink" title="Task 3: Sparse MLP"></a>Task 3: Sparse MLP</h1><p>在 Task 1，2 中实现的 DenseMLPWithLoRA 模块的基础上，我们将继续结合主流 Mixture-of-Experts (MoE) 架构实现 SparseMLPWithLoRA 模块（更多细节见参考文献）。首先，所谓 <strong>Dense</strong> 的 MLP 模块，通常是指一种标准结构：它先将 <code>hidden_states</code> $\mathbf{X}$ 从 <code>h</code> 维上投影（up-project）到更高的 <code>ffh</code> 维，再通过 <code>gating</code> 机制下投影（down-project）回原始维度。</p>
+<p>对于 <strong>Sparse</strong> 的 MLP 模块，类似于 attention 模块中的 multi-head 机制，将投影矩阵的 <code>ffh</code> 维度划分为 <code>ne</code> 个大小相等的 <code>shard</code>（分片），每个 <code>shard</code> 的大小为 <code>e = ffh // ne</code>，对应一个“专家”（expert）$E_i$，其中 $i \in [0, …, \text{ne}−1]$（<code>ne</code> 表示专家的数量）。因此，与传统使用大维度 <code>ffh</code> 的 Dense 投影不同，<code>SparseMLPWithLoRA</code> 模块中，<code>hidden_states</code> $\mathbf{X}$ 中的每个 <code>token</code> 仅通过一个 <strong>routing mechanism</strong> 映射到 <code>k</code> 个特定的 experts，每个 expert 仅负责处理一个特定的 <code>e</code> 维子空间（在本模块中，你可以简单地<strong>将每个 expert 建模为一个小型的 DenseMLPWithLoRA 模块</strong>，其中 <code>ffh_size</code> 参数设置为 <code>e</code>）。最终，每个 <code>token</code> 的最终输出是来自这 <code>k</code> 个 experts 子输出的加权和。通过这种方式，我们可以同时实现两个目标：</p>
+<ul>
+<li>降低高维计算开销；</li>
+<li>提高潜在模式的多样性，其增益比例约为 <code>ne</code>，类似于 multi-head 机制带来的并行子空间学习能力。</li>
+</ul>
+<p>具体而言，有两个问题需要考虑：</p>
+<ol>
+<li>如何建模 <strong>routing mechanism</strong>，为每个 <code>token</code> 选择 <code>k</code> 个特定的 experts？</li>
+<li>如何确定权重 $\mathbf{W}$，为每个 <code>token</code> 对应 <code>k</code> 个 experts 得到的子输出进行加权求和？</li>
+</ol>
+<p>对于上述两个问题，存在多种解决方案，而在本任务中，我们选择参考 Mixtral 的方法（具体细节见参考文献），采用如下方案：</p>
+<ol>
+<li><p>如下方公式所示，我们引入一个额外的线性 <code>gating</code> 层 $\mathbf{G}$，满足 $\mathbf{G} \in \mathbb{R}^{\text{h} \times \text{ne}}$，对于每个 <code>token t</code>，满足 $\text{t} \in \mathbb{R}^{\text{b} \times 1 \times \text{h}}，$通过 $\mathbf{G}$ 将其 <code>hidden_states</code> 投影为一个 <code>ne</code> 维的 <code>logits</code>，然后对该 <code>logits</code> 应用 <code>softmax</code>，形成一个 <code>ne</code> 维的 routing 概率分布 $\mathbf{P}_\text{t}$，其中 $\mathbf{P}_\text{t}[\text{i}]$ 表示该 <code>token</code> 被路由到 expert $E_\text{i}$ 的概率：</p>
+<script type="math/tex; mode=display">
+\mathbf{P}_\text{t} = \text{softmax}(\mathbf{X}_\text{t} \times \mathbf{G}), \quad where\space \mathbf{G} \in \mathbb{R}^{\text{h} \times \text{ne}}, \space\forall \text{t}</script></li>
+<li><p>基于 $\mathbf{P}_\text{t}$，我们从中<strong>选出概率最高的 <code>k</code> 个 experts</strong> 组成一个集合 $\mathbf{I}_\text{t}$，作为该 <code>token</code> 的路由，这 <code>k</code> 个概率值另外构成一个新的 <code>k</code> 维<strong>未归一化分布 $\mathbf{Q}_\text{t}$</strong>：</p>
+<script type="math/tex; mode=display">
+\mathbf{I}_\text{t} = \text{arg-topk}(\mathbf{P}_\text{t}), \quad \mathbf{Q}_\text{t} = \mathbf{P}_\text{t}[\mathbf{I}_\text{t}]</script></li>
+<li><p>我们重新对 $\mathbf{Q}_\text{t}$ 进行归一化（renormalization），定义新的 <code>k</code> 维 routing 的概率分布，从而得到关于该 <code>token</code> 每个 expert 输出的加权权重 $\mathbf{W}_\text{t}$ 以及每个 expert $E_\text{i}$ 的输出：</p>
+<script type="math/tex; mode=display">
+\mathbf{W}_\text{t} = \frac{\mathbf{Q}_\text{t}}{\text{sum}(\mathbf{Q}_\text{t})}, \space\forall \text{t}</script><script type="math/tex; mode=display">
+\mathbf{O}_\text{t}'[\text{i}] = E_\text{i}(\mathbf{X}_\text{t}), \space\forall \text{i} \in \mathbf{I}_\text{t}, \space\forall \text{t}</script></li>
+<li><p>此外，为了模拟类似于 A2 <code>ParallelVocabEmbedding</code> 中的分布式环境，我们为 <code>SparseMLPWithLoRA</code> 模块添加了两个类似的参数：<code>rank</code> 和 <code>world_size</code>，其含义同 A2。这意味着你应该仅为当前模块实例化 <code>nle</code> 个本地 experts，其中 expert 的索引范围为 $R = [rank <em> nle, (rank + 1) </em> nle)$，其中，<code>nle = ne // world_size</code> 表示每个进程（rank）中包含的本地 experts 数量。因此，对于每个 <code>token t</code>，<code>SparseMLPWithLoRA</code> 模块的最终输出 $\mathbf{O}_\text{t}$ 只是一个<strong>部分加和</strong>（partial sum），即只计算该 <code>token</code> 被路由到的 expert 子集 $\mathbf{I}_\text{t}$ 与本地 expert 索引集合的交集（记作 $\mathbf{I}_\text{t}’$），如果 $\mathbf{I}_\text{t}’$ 为空，则输出应得到<strong>全零向量</strong>。理论上，最终的完整输出应该通过对所有 <code>rank</code> 聚合得到，但我们省略该过程，即只计算本地输出即可：</p>
+<script type="math/tex; mode=display">
+\mathbf{O}_\text{t} = \begin{cases}
+ \sum\limits_{\text{i} \in \mathbf{I}_\text{t}’} \mathbf{W}_\text{t}[\text{i}] \mathbf{O}_\text{t}'[\text{i}], & \mathbf{I}_\text{t}’ \neq \emptyset \\
+ \vec{\mathbf{0}}, & \mathbf{I}_\text{t}’ = \emptyset
+ \end{cases}, \quad where\space \mathbf{I}_\text{t}’ = \mathbf{I}_\text{t} \space\cap\space R, \space\forall t</script></li>
+</ol>
+<h2 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h2><p><strong>完成 <code>src/modeling/mlp.py</code> 中的 <code>SparseMLPWithLoRA</code> 模块</strong>，具体细节包括：</p>
+<ul>
+<li>同样，你需要为 <code>SparseMLPWithLoRA</code> 模块实现 <code>reset_parameters</code> 方法：<ul>
+<li>对于 experts，即 <code>DenseMLPWithLoRA</code>，你可以直接调用它们各自的 <code>reset_parameters</code> 方法，注意，为了避免相同的初始化结果，你应该为每个 expert 的 seed 设置一个偏移，具体而言，<code>DenseMLPWithLoRA</code> 的 <code>init_base_seed</code>，<code>lora_dropout_seed</code>，<code>lora_init_base_seed</code> 偏移量定义为<strong>该 expert 的全局索引 index</strong>。</li>
+<li>对于 <code>gating</code> 层 $\mathbf{G}$，直接通过 <code>nn.init.normal_</code> 初始化，均值和标准差分别由参数 <code>init_mean</code> 和 <code>init_std</code> 控制，其随机性由 <code>init_base_seed</code> 控制，<strong>且不加任何偏移量</strong>。</li>
+</ul>
+</li>
+</ul>
+<div class="note warning">
+            <ol><li>我们继承 Task1，Task2 中关于 <code>DenseMLPWithLoRA</code> 子模块的注意事项，用于建模本地 expert。</li><li>参数中的 <code>dtype</code> 和 <code>device</code> 是针对可学习参数的设置，可能与输入 $\mathbf{X}$ 的 <code>dtype</code> 和 <code>device</code> 不同，即不强制匹配，允许你控制这些行为，这样设计更灵活。</li><li>输出 O 的属性（包括 <code>dtype</code> 和 <code>device</code>）必须与输入 $\mathbf{X}$ 保持一致。</li><li><code>reset_parameters</code> 方法应在 <code>__init__</code> 方法中自动调用一次，用于初始化所有参数。</li><li><code>Gating</code> 层 $\mathbf{G}$ 的权重通常需要更高的精度，因为后续的 <code>softmax</code> 操作对数值较为敏感。因此，<strong>$\mathbf{G}$ 的参数 <code>dtype</code> 固定为 float32</strong>，不受传入的 <code>dtype</code> 参数影响。</li><li><code>ffh</code> 保证能被 <code>ne</code> 整除，但在 <code>__init__</code> 方法中检查可整除性仍然是一个良好的编程习惯。</li></ol>
+          </div>
+<h1 id="Sparse-MLP-小结"><a href="#Sparse-MLP-小结" class="headerlink" title="Sparse MLP 小结"></a>Sparse MLP 小结</h1><p>综上，你需要实现 <code>SparseMLPWithLoRA</code> 模块，其功能包括：</p>
+<ol>
+<li>初始化所有可学习参数，包括本模块负责的每个本地 expert 的参数，以及 <code>gating</code> 层 $\mathbf{G}$ 的参数。</li>
+<li>接收输入 $\mathbf{X}$，对于每个 <code>token t</code>，计算其 top-k expert 子集，仅对与当前 <code>rank</code> 管理的本地 expert 集合 R 的交集执行 <code>forward</code> 计算流程，对于未路由到本地 experts 的 <code>token</code>，其输出保持为全零向量。</li>
+<li>最终返回与输入 $\mathbf{X}$ 具有相同形状的输出 <code>hidden states</code> $\mathbf{O}$，最终某个 <code>token t</code> 的非零输出为路由到的本地 experts 所产生的子输出的加权和。</li>
+</ol>
+<p>以下是一些可能对你完成该任务有帮助的参考资料，也可以用于加深或拓宽你对 dense MLP 层、sparse-moe MLP 层、LoRA Adapters 和激活函数的理解：</p>
 <h2 id="TODO-补充参考文献"><a href="#TODO-补充参考文献" class="headerlink" title="TODO 补充参考文献"></a>TODO 补充参考文献</h2>
     </div>
 
@@ -356,7 +402,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Dense-MLP"><span class="nav-number">1.</span> <span class="nav-text">Task 1: Dense MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-2-Dense-MLP-with-LoRA-Adapters"><span class="nav-number">2.</span> <span class="nav-text">Task 2: Dense MLP with LoRA Adapters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-1"><span class="nav-number">2.1.</span> <span class="nav-text">TODO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-%E6%98%AF%E5%90%A6%E5%8C%BA%E5%88%86%E4%B8%A4%E4%B8%AAclass"><span class="nav-number">2.2.</span> <span class="nav-text">TODO 是否区分两个class</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-3-Sparse-MLP"><span class="nav-number">4.</span> <span class="nav-text">Task 3: Sparse MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-2"><span class="nav-number">4.1.</span> <span class="nav-text">TODO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-%E8%A1%A5%E5%85%85%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">4.2.</span> <span class="nav-text">TODO 补充参考文献</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Dense-MLP"><span class="nav-number">1.</span> <span class="nav-text">Task 1: Dense MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-2-Dense-MLP-with-LoRA-Adapters"><span class="nav-number">2.</span> <span class="nav-text">Task 2: Dense MLP with LoRA Adapters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-1"><span class="nav-number">2.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dense-MLP-%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">Dense MLP 小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-3-Sparse-MLP"><span class="nav-number">4.</span> <span class="nav-text">Task 3: Sparse MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-2"><span class="nav-number">4.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sparse-MLP-%E5%B0%8F%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">Sparse MLP 小结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-%E8%A1%A5%E5%85%85%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">5.1.</span> <span class="nav-text">TODO 补充参考文献</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
