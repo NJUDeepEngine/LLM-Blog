@@ -175,7 +175,7 @@ $$
 
 - 对于 $\frac{\partial \mathbf{Y}}{\partial \mathbf{W}}$：
    
-  首先，考虑单个样本 $ \mathbf{X}_i $ 的 `forward` 计算，有：$\mathbf{y} = \mathbf{x} \times W$，如果把 b 理解成 batch，那 $\mathbf{W}$ 对不同样本共享权重。同样：
+  首先，考虑单个样本 $ \mathbf{X}_i $ 的 `forward` 计算，有：$\mathbf{y} = \mathbf{x} \times \mathbf{W}$，如果把 b 理解成 batch，那 $\mathbf{W}$ 对不同样本共享权重。同样：
   
   $$\mathbf{y}_{j:}=\mathbf{x}_j \times \mathbf{W} \Rightarrow \frac{\partial \mathbf{y}_{jk}}{\partial \mathbf{W}_{:k}} = \mathbf{x}_j^\top
   $$
