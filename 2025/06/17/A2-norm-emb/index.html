@@ -295,7 +295,7 @@ s.t. \quad \frac{n}{\tilde{\beta}^{d/2 - 1}} = \frac{n/\kappa}{\beta^{d/2 - 1}}
 <li>输出张量 <code>E</code> 的形状与 <code>X</code> 的形状相同，表示应用旋转编码后的结果。</li>
 </ul>
 </li>
-<li><p>由于 <strong>RoPE</strong> 矩阵的稀疏性，直接用矩阵乘法来实现会很浪费算力，推荐使用 $(8)$ 中的方法来实现标准 <strong>RoPE</strong>。其中，$\bigotimes$ 是逐位相乘，并且可以注意到 $(8)$ 中，$X$ 按 $(x<em>0,x_1),(x_2,x_3),\cdots$ 的顺序进行分组。而 <code>Llama</code> 和 <code>ChatGLM</code> 的 <strong>RoPE</strong> 模块对 $X$ 的顺序进行了重组，也即按 $(x_0,x</em>{\frac{d}{2}}),(x<em>1,x</em>{\frac{d}{2}+1}),\cdots$ 的顺序进行分组，请使用 $(9)$ 中的方法实现 <strong>Task4</strong> 中的 <strong>RoPE</strong>。</p>
+<li><p>由于 <strong>RoPE</strong> 矩阵的稀疏性，直接用矩阵乘法来实现会很浪费算力，推荐使用 $(8)$ 中的方法来实现标准 <strong>RoPE</strong>。其中，$\bigotimes$ 是逐位相乘，并且可以注意到 $(8)$ 中，$X$ 按 $(x_0,x_1),(x_2,x_3),\cdots$ 的顺序进行分组。而 <code>Llama</code> 和 <code>ChatGLM</code> 的 <strong>RoPE</strong> 模块对 $X$ 的顺序进行了重组，也即按 $(x_0,x_{\frac{d}{2}}),(x_1,x_{\frac{d}{2}+1}),\cdots$ 的顺序进行分组，请使用 $(9)$ 中的方法实现 <strong>Task4</strong> 中的 <strong>RoPE</strong>。</p>
 <div class="note info">
             <p>余弦\正弦参数对 <code>(C, S)</code> 也要做相应调整。</p>
           </div>
@@ -451,7 +451,10 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
     <a href="/LLM-Blog/2025/06/14/A1-matmul/" rel="prev" title="A1 matmul">
       <i class="fa fa-chevron-left"></i> A1 matmul
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/LLM-Blog/2025/06/29/A3-modeling-mlp/" rel="next" title="A3 Modeling MLP">
+      A3 Modeling MLP <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -524,7 +527,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
       <div class="site-state-item site-state-posts">
           <a href="/LLM-Blog/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -535,7 +538,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
