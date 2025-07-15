@@ -5,7 +5,15 @@ Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [docume
 
 ## Quick Start
 
-### Create a new post
+## 📄 文章索引
+
+1. {% post_link A0-onboarding A0 Onboarding %}
+2. {% post_link A1-matmul A1 Matmul  %}
+3. {% post_link A2-norm-emb A2 RMSNorm and Embedding  %}
+4. {% post_link A3-modeling-mlp A3 Modeling MLP  %}
+5. {% post_link A4-attention-module A4 Attention Module  %}
+
+<!-- ### Create a new post
 
 ``` bash
 $ hexo new "My New Post"
@@ -32,4 +40,4 @@ More info: [Generating](https://hexo.io/docs/generating.html)
 ### Deploy to remote sites
 
 ``` bash
-$ hexo deploy
+$ hexo deploy -->
