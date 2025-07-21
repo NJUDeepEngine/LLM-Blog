@@ -150,6 +150,634 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/07/21/A5-transformer-block/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LLM-Blog/images/avatar.gif">
+      <meta itemprop="name" content="DeepEngine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LLM-Assignment-Doc">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LLM-Blog/2025/07/21/A5-transformer-block/" class="post-title-link" itemprop="url">A5 Transformer Block</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-21 21:56:13 / 修改时间：21:57:45" itemprop="dateCreated datePublished" datetime="2025-07-21T21:56:13+08:00">2025-07-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LLM-Blog/categories/Assignment/" itemprop="url" rel="index"><span itemprop="name">Assignment</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对于本次作业，我们将使用前几次作业实现的模块，将多个模块进行拼接，组成 <strong>Transformer Block</strong>，并最终连接 <strong>Embedding</strong> 和 <strong>Transformer Block</strong>，组成一个最基本的 <strong>Transformer</strong> 模型。本次作业将实现三个模块，分别是 <strong>Decoder KVCache</strong>，<strong>Decoder Layer</strong> 和 <strong>Decoder Block</strong>。</p>
+<h4 id="Task-1-Transformer-Decoder-KVCache"><a href="#Task-1-Transformer-Decoder-KVCache" class="headerlink" title="Task 1: Transformer Decoder KVCache"></a>Task 1: Transformer Decoder KVCache</h4><p>大多数当代基于 Transformer 的大语言模型（LLMs），如 Llama 和 ChatGLM，采用的是 <strong>decoder-only</strong> 架构，并以 <strong>causal language modeling（CLM）</strong> 目标进行预训练。这意味着在<u>推理阶段</u>，它们必须遵循自回归（auto-regressive）生成范式，逐 token 地进行生成。该过程可以自然地划分为两个阶段：</p>
+<ul>
+<li><strong>Prefilling 阶段</strong>：LLM 被输入一个完整的未见过的查询序列（query sequence），这些 token 之间在此前并未进行 attention 计算。模型执行一次前向传播，返回下一个 token 的概率分布，接着我们可以从中生成第一个 token。</li>
+<li><strong>Decoding 阶段</strong>：之后，为了生成后续的 token，每次会将新生成的 token 作为新的输入再次送入 LLM，此时它需要对当前 token 以及所有先前的 token（包括原始输入中的 token 和先前生成的 token）的 keys 和 values 进行 attention 计算。</li>
+</ul>
+<p>因此，为了储存并避免在 <strong>decoding 阶段</strong> 中每个 Transformer decoder 层都对先前 token 的 key 和 value 进行重复计算（详见 Task2），我们可以从 <strong>prefilling 阶段</strong> 开始对这些 key 和 value 进行缓存。当新生成的 token 输入模型时，直接从缓存中检索并复用已有的 key-value 张量，并在序列维度上进行更新，为下一个 token 的生成做好准备。</p>
+<p>为了更好地管理缓存中用于存储、读取和更新历史 key-value 张量的数据，我们设计了一个简单的模块，作为数据结构，命名为 <strong><code>TransformerDecoderKVCache</code></strong>。以下是该模块的 API 参考接口，供你实现时参考：</p>
+<ul>
+<li><code>__init__(qkv_layout, num_layers=1)</code>：根据给定的 <code>qkv_layout</code>（用于推断 kv 的形状）和 <code>num_layers</code>（便于预先知道层数，你可以据此预分配一些内部数据结构）来初始化缓存。</li>
+<li><code>has(layer_idx)</code>：检查缓存中是否存在指定层的 key-value 张量。</li>
+<li><code>get(layer_idx)</code>：获取指定层的 key-value 张量。如果使用的是变长注意力（<code>varlen attention</code>）且 <code>qkv_layout=AttnQKVLayout.THD</code>，则额外返回 <code>cu_seqlens</code>；否则返回 <code>None</code> 作为占位。</li>
+<li><code>set(layer_idx, k, v, cu_seqlens=None)</code>：为指定层设置 key-value 张量（若该层已存在，则覆盖），若使用变长注意力，则应传入  <code>cu_seqlens</code>。</li>
+<li><code>append(layer_idx, k, v, cu_seqlens=None)</code>：沿序列维度更新指定层已有的缓存内容（若该层不存在，则行为应与 <code>set</code> 一致），若使用变长注意力，则应传入 <code>cu_seqlens</code>。</li>
+<li><code>reset()</code>：清空缓存内容并重置为初始状态。</li>
+</ul>
+<p>当然，上述数据结构只是一个简单且基础的实现（参考文献中可见 Hugging Face Transformers 的相关实现）。在实际应用中，还有许多更精细的设计方案，能够有效减少 KV 缓存的内存占用，并提升解码效率（具体可参考文献中的 vLLM 相关文档）。</p>
+<h5 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h5><p>你需要按照上述 API 参考在 <code>src/modeling/transformer.py</code> 中实现 <code>TransformerDecoderKVCache</code> 模块。该模块将在后续任务中作为辅助组件使用，用于仅在推理阶段以简洁的方式管理每个 Transformer decoder 层的 KV 缓存。</p>
+<div class="note warning">
+            <p>1.传入 <code>set</code> 和 <code>append</code> 方法的所有参数都保证与缓存中已有的数据保持一致。例如，当 <code>qkv_layout</code> 为 <code>AttnQKVLayout.THD</code> 时，将提供对应的 <code>cu_seqlens</code>；同时，传入张量的属性，如 <code>dtype</code>、<code>device</code> 以及由 <code>cu_seqlens</code> 推断出的内部 <code>batch_size</code>，也都会与缓存中已有的数据一致。但即便如此，出于错误处理和确保缓存正确性的考虑，你仍然应该检查参数的一致性。</p><p>2.本任务对时间和空间复杂度没有要求，因此你可以自由地设计数据结构，只需确保其逻辑正确且资源开销在可接受范围内。</p>
+          </div>
+<h4 id="Task2-Transformer-Decoder-Layer"><a href="#Task2-Transformer-Decoder-Layer" class="headerlink" title="Task2: Transformer Decoder Layer"></a>Task2: Transformer Decoder Layer</h4><p>基于 decoder-only 架构的 Transformer 大语言模型（LLM），可以形象地比喻为一个“巨型汉堡”：</p>
+<ul>
+<li>最上层和最下层的面包片，分别对应模型中的 <strong>输入嵌入层</strong> 和 <strong>输出嵌入层</strong>，它们负责在 <strong>token 空间</strong> 与 <strong>潜在的 hidden 表示空间</strong> 之间进行转换。</li>
+<li>中间层层叠叠的“牛肉饼”，则由一系列 <strong>decoder layer</strong> 构成。这些层通过 <strong>self-attention 机制</strong> 实现 token 之间的交互，通过 <strong>MLP 机制</strong> 实现每个 token 内部的线性与非线性变换。</li>
+</ul>
+<p>因此，本任务的目标是像主厨一样精心打造这“牛肉饼”中的一片——即 <code>TransformerDecoderLayer</code> 模块。在后续任务中，我们将把多片这样的“牛肉饼”叠加在一起，并加上“面包层”，最终构建出这个“巨无霸汉堡”（详见 Task3）。</p>
+<p>一个 Transformer decoder layer 由两个主要的子层组成：</p>
+<ul>
+<li><p><strong>Self-Attention 层</strong>：给定输入 $X$ ，满足 $X \in \mathbb{R}^{batch_size \times seq_len \times hidden_size}$ ，记作 <code>[b, s, h]</code>。如果同时提供了 <code>cu_seqlens</code>，则此处的 <code>batch_size</code> 被约定为 1，而真实的 <code>batch_size</code>（记作 <code>inner_batch_size</code>）需要通过 <code>cu_seqlens</code> 推断出来，因为内部各序列在 <code>seqlen</code> 维度上被拼接在了一起。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+R &= X \\
+\tilde{X} &= \mathrm{Norm}(X) \\
+Q, K, V &= \mathrm{split}(\tilde{X} \times W_{QKV}) \\
+\tilde{Q}, \tilde{K} &= \mathrm{RoPE}(Q), \mathrm{RoPE}(K) \\
+\tilde{O} &= \mathrm{SelfAttn}(\tilde{Q}, \tilde{K}, V) \\
+O &= \tilde{O} \times W_O + R
+\end{aligned}
+\tag {1}</script></li>
+<li><p><strong>MLP</strong> 层：给定输入 $X$（即上述 <strong>self-attention</strong> 层的输出 $O$），该层对输入 $X$ 归一化后，再进行 MLP 变换，并通过残差连接，得到最终的输出 $O$。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+R &= X \\
+\tilde{X} &= \mathrm{Norm}(X) \\
+\tilde{O} &= \mathrm{MLP}(\tilde{X}) \\
+O &= \tilde{O} + R
+\end{aligned}
+\tag {2}</script></li>
+</ul>
+<p>为了充分利用我们在之前作业中构建的模块，这里我们将 <strong>Norm</strong> 实现为 <code>GroupRMSNorm</code>，<strong>RoPE</strong> 实现为 <code>NTKAwareRoPE</code>， <strong>SelfAttn</strong> 实现为 <code>OfflineSlidingWindowAttn</code> 或 <code>OnlineSlidingWindowAttn</code>，<strong>MLP</strong> 实现为 <code>DenseMLPWithLoRA</code> 或 <code>SparseMLPWithLoRA</code>。由于 <code>NTKAwareRoPE</code> 和 <code>OnlineSlidingWindowAttn</code> 属于 <u>Bonus</u> 任务，我们会提供一个封装好的模块以便同学们使用，若自己实现了相应模块也可在代码中进行替换。</p>
+<p>为了支持<u>推理阶段</u>的前向传播，<code>TransformerDecoderLayer</code> 模块的 forward 方法还支持一个可选的 <code>kv_cache</code> 参数，该参数由 <code>TransformerDecoderKVCache</code>（参见 Task1）实例化，负责管理所有 <code>decoder layer</code> 的 kv 缓存。你需要从中获取当前 <code>decoder layer</code> 对应的缓存，利用缓存中的 key-value 与当前的 key-value 一起对当前 query 进行注意力计算，并通过调用我们在 Task1 中实现的相应接口更新缓存。</p>
+<p>在使用缓存的 key-value 对当前 query 进行注意力计算时，attention mask 也必须保持对齐。回顾 <strong>A4</strong> 的 <strong>Task 2</strong>，当 query 与 key-value 在序列维度上的长度不一致时，我们已经按照 Flash Attention 的设置，将掩码对齐到右下角（详见参考文献中的 Flash Attention 接口示例）。因此，在推理阶段的解码过程中，这一问题将由 attention 子模块<strong>自动处理</strong>。由于当前的 query 始终位于历史 key-value 之后（即位置索引最大），它对应 attention mask 矩阵的<strong>最后一行</strong>，从而确保其能够与所有缓存的 key-value 计算注意力。</p>
+<p>对于自己实现 <code>NTKAwareRoPE</code> 的同学来说，另一个相关的问题是，当前 query 可能是单个 token，其位置索引不再是从 0 开始，而是一个较大的位置索引，因此需要正确地分配位置编码。为此，我们在 <code>NTKAwareRoPE</code> 模块的 forward 方法中引入了一个新的可选参数 <code>offset: int = 0</code>，方便你稍作修改，使其支持对输入张量的所有位置索引统一平移一个固定的偏移量，也就是将原始索引范围 <code>[0, seq_len - 1]</code> 转换为 <code>[offset, offset + seq_len - 1]</code>。当然，这个新功能在本任务中不作强制验证，所以你完全可以忽略它，继续使用你旧版的 <code>NTKAwareRoPE</code> 实现，或者采用其他方案准确处理位置索引问题。我们提供的 <code>NTKAwareRoPE</code> 模块已经实现了该功能，可以直接通过接口进行调用。</p>
+<p>为了方便管理 <code>TransformerDecoderLayer</code> 模块及其子模块的初始化，我们在 <code>src/modeling/transformer.py</code> 中提供了一个通用的配置数据类 <code>TransformerConfig</code>。该配置类包含了初始化 <code>TransformerDecoderLayer</code> 模块所需的所有参数（除了 <code>layer_idx</code>，它是一个可选参数，取值范围为 <code>[0, config.num_layers]</code>，用于手动指定当前解码器层的索引 id），具体参数说明见<strong>附表2</strong>。</p>
+<h5 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h5><p>你需要实现 <code>src/modeling/transformer.py</code> 中的 <code>TransformerDecoderLayer</code> 模块。该模块接收输入 $X$，累计序列长度 <code>cu_seqlens</code>，以及一个 <em>Optional</em> 的 <code>kv_cache</code> 作为输入。模块内部依次经过 <code>self_attention</code> 层（<code>offline/online self-attention</code>）和 <code>MLP</code> 层（<code>dense/sparse MLP</code> ），过程中使用 <code>Group RMS</code> 、<code>Linear</code> 以及残差连接。最终返回一个与输入 $X$ 形状相同的输出张量 $O$，作为下一层 <code>decoder layer</code> 的输入。</p>
+<div class="note warning">
+            <ol><li>为了为每个 <code>Decoder Layer</code> 中的子模块或子操作分配唯一的随机数种子，我们通常会在 <strong>TransformerConfig</strong> 中提供的基础种子上添加一些偏移量，以生成实际使用的随机种子，具体偏移规则如<strong>附表1</strong>所示。</li><li>我们保证传入 <code>Decoder Layer</code> 的输入在格式上与 <code>qkv_layout</code> 以及 <code>cu_seqlens</code>（包括保存在 <code>kv_cache</code> 中的内容）保持一致。但出于错误处理和验证正确性的考虑，检查各个参数的一致性是一个良好的编程习惯。</li><li>我们保证仅在满足以下所有条件时才使用 <code>OnlineSlidingWindowAttn</code>：<ul><li>序列长度等于 <code>max_seq_len</code>；</li><li><code>kv_cache</code> 为 <code>None</code>；</li><li><code>qkv_layout</code> 为 <code>AttnQKVLayout.BSHD</code>，因此 <code>cu_seqlens</code> 为 <code>None</code>；</li><li><code>qkv_pack_format</code> 为 <code>AttnQKVPackFormat.Q_K_V</code>。</li></ul></li><li>输入的属性（如 <code>dtype</code> 和 <code>device</code>）可能与模型参数的属性不同，因此你需要特别注意，确保输出的属性与输入保持一致。</li></ol>
+          </div>
+<h4 id="Task3-Transformer-Decoder-Block"><a href="#Task3-Transformer-Decoder-Block" class="headerlink" title="Task3: Transformer Decoder Block"></a>Task3: Transformer Decoder Block</h4><p>在 Task2 的基础之上，我们继续实现 <code>TransformerDecoderBlock</code> 模块。该模块由多个 <code>TransformerDecoderLayer</code> 层堆叠组成，外部包裹输入嵌入层和输出嵌入层，前者由 <code>ParallelVocabEmbedding</code> 模块实例化，后者由标准的 <code>nn.Linear</code> 模块实例化。</p>
+<p>遵循 Llama 的设计（详见参考中的 <em>Llama Model Module</em> 部分），输入嵌入层 <code>VocabEmb</code> 接收一个形状为 <code>[batch_size, seq_len]</code> 的 token ID 序列张量 <code>I</code>，并将其从词汇空间映射到隐藏空间，生成初始张量 <code>X_ini</code>，其形状为 <code>[batch_size, seq_len, hidden_size]</code>。随后，初始隐藏张量 <code>X_ini</code> 会依次传入 <code>L</code> 个堆叠的解码器层 <code>DecoderLayers</code>，以获得最终隐藏张量 <code>X_fin</code>。</p>
+<p>输出嵌入层 <code>LMHead</code> 则以通过 <code>FinalNorm</code>（一个 <code>GroupRMSNorm</code> 模块的实例）归一化后的最终隐藏张量 <code>X_fin~</code> 为输入，将其从隐藏空间映射回词汇空间，输出每个 token 对应的词汇预测 logits，结果为 <code>[batch_size, seq_len, vocab_size]</code> 的张量 <code>Logits</code>。</p>
+<p>解码器块的整个前向传播过程可以形式化地表示为如下公式：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+X_{\text{ini}} &= \mathrm{VocabEmb}(I) \\
+X_{\text{fin}} &= \mathrm{DecoderLayers}_{L}(X_{\text{ini}}) \\
+\tilde{X}_{\text{ini}} &= \mathrm{FinalNorm}(X_{\text{fin}}) \\
+\mathrm{Logits} &= \mathrm{LMHead}(\tilde{X}_{\text{ini}})
+\end{align*}
+\tag{3}</script><p>除了上述结构以外，<code>decoder layer</code> 还需初始化并维护一个 <code>TransformerDecoderKVCache</code> 模块的实例，用于统一管理所有 <code>decoder layer</code> 的 KV 缓存。在推理阶段（即 <code>self.training</code> 为 <code>False</code> 时），该缓存会在 for-loop 中传递给每一层。</p>
+<p><code>TransformerDecoderBlock</code> 模块在初始化时接收一个 <code>TransformerConfig</code> 数据类的实例，作为全局配置参数，并在内部将该配置与各层的层索引一同传递给每个 <code>decoder layer</code>。关于 <code>TransformerConfig</code> 数据类中各项配置的详细说明，可参见 Task2 和<strong>附表2</strong>。</p>
+<p>此外，你还需要实现若干简洁且实用的接口，用于访问 KV 缓存并统计模型参数情况：</p>
+<ul>
+<li><code>get_kv_cache()</code>：返回当前的 KV 缓存对象。</li>
+<li><code>set_kv_cache(kv_cache: TransformerDecoderKVCache)</code>：设置新的 KV 缓存对象。</li>
+<li><code>reset_kv_cache()</code>：调用 KV 缓存对象的 <code>reset()</code> 方法，重置缓存。</li>
+<li><code>num_parameters(learnable_only: bool = False, unit: str = &quot;1&quot;)</code>：以指定的数量单位（可选单位包括 <code>&quot;1&quot;</code>、<code>&quot;K&quot;</code>、<code>&quot;M&quot;</code>、<code>&quot;B&quot;</code>）返回模型参数总数；若 <code>learnable_only</code> 设为 <code>True</code>，则仅统计可训练参数。</li>
+<li><code>num_memory_footprint(unit: str = &quot;B&quot;)</code>：以指定的字节单位（可选单位包括 <code>&quot;B&quot;</code>、<code>&quot;KB&quot;</code>、<code>&quot;MB&quot;</code>、<code>&quot;GB&quot;</code>）返回模型参数占用的内存大小。</li>
+</ul>
+<h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>你需要实现 <code>TransformerDecoderBlock</code> 模块，该模块以 token ID 张量 $I$ 作为输入，输出词汇预测张量 <code>Logits</code>。同时，它负责管理所有<code>decoder layer</code>的 KV 缓存，并提供若干便捷接口，供用户访问 KV 缓存及查询模型参数的相关统计信息。</p>
+<div class="note warning">
+            <ol><li><code>decoder layer</code>的随机数种子设置详见 Task2注意事项和<strong>附表1</strong>。</li><li>输入的 token ID 的 <code>device</code> 可能与参数的 <code>device</code> 不同，确保输出 <code>logits</code> 的 <code>device</code> 与输入 token ID 保持一致。</li><li>在 <code>TransformerConfig</code> 数据类中，有一个特殊的 <code>bool</code> 变量 <code>lm_head_tied</code>，表示 <code>lm_head</code> 层与词汇嵌入层是否共享参数，而非分开设置并初始化（详情见参考文献中的 HF PretrainedModel Tie Weights）。</li><li>我们采用标准的 <code>nn.Linear</code> 层来实现 <code>lm_head</code>，其初始化方法与直接初始化 <code>nn.Parameter</code> 张量略有不同（详情见参考文献中的 Llama PretrainedModel Init Weights）。</li></ol>
+          </div>
+<hr>
+<h5 id="附表1"><a href="#附表1" class="headerlink" title="附表1"></a>附表1</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Sub-module or Sub-Operation</th>
+<th>Basic Random Seed</th>
+<th>Offset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qkv_proj</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.proj_init_seed</code></td>
+<td><code>i + 1</code></td>
+</tr>
+<tr>
+<td><code>o_proj</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.proj_init_seed</code></td>
+<td><code>i + 2</code></td>
+</tr>
+<tr>
+<td><code>attn_norm</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.init_base_seed</code></td>
+<td><code>i + 1</code></td>
+</tr>
+<tr>
+<td><code>attn</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.init_base_seed</code></td>
+<td><code>i + 2</code></td>
+</tr>
+<tr>
+<td><code>mlp_norm</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.init_base_seed</code></td>
+<td><code>i + 3</code></td>
+</tr>
+<tr>
+<td><code>mlp</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.init_base_seed</code></td>
+<td><code>i + 4</code></td>
+</tr>
+<tr>
+<td><code>softmax_dropout</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.softmax_dropout_seed</code></td>
+<td><code>i</code></td>
+</tr>
+<tr>
+<td><code>lora</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.lora_init_base_seed</code></td>
+<td><code>i</code></td>
+</tr>
+<tr>
+<td><code>lora_dropout</code> in the <code>i</code>-th decoder layer</td>
+<td><code>config.lora_dropout_seed</code></td>
+<td><code>i</code></td>
+</tr>
+<tr>
+<td><code>vocab_embed</code> in the decoder block</td>
+<td><code>config.init_base_seed</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>lm_head</code> in the decoder block</td>
+<td><code>config.proj_init_seed</code></td>
+<td><code>0</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="附表2"><a href="#附表2" class="headerlink" title="附表2"></a>附表2</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>Config Name</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Required</strong></th>
+<th><strong>Fixed</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>num_layers</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The number of transformer decoder layers used in <code>TransformerDecoderBlock</code>(<em>See <a target="_blank" rel="noopener" href="https://github.com/NJUDeepEngine/llm-assignments/blob/a4-ref/tasks/task3.md">Task3</a></em>).</td>
+</tr>
+<tr>
+<td><code>hidden_size</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The dimension of the hidden states.</td>
+</tr>
+<tr>
+<td><code>ffh_size</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The dimmension of the intermediate hidden states used in <code>DenseMLPWithLoRA</code>and <code>SparseMLPWithLoRA</code>.</td>
+</tr>
+<tr>
+<td><code>max_seq_len</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The maximum sequence length used in <code>NTKAwareRoPE</code> and <code>OnlineSlidingWindowAttn</code>.</td>
+</tr>
+<tr>
+<td><code>param_dtype</code></td>
+<td><code>torch.dtype</code></td>
+<td><code>torch.float32</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The data type of <strong>ALL</strong> the parameters.</td>
+</tr>
+<tr>
+<td><code>param_device</code></td>
+<td><code>str</code></td>
+<td><code>&quot;cpu&quot;</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The device on which <strong>ALL</strong> of the parameters are located.</td>
+</tr>
+<tr>
+<td><code>init_base_seed</code></td>
+<td><code>int</code></td>
+<td><code>42</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The basic random seed for parameter initialization.</td>
+</tr>
+<tr>
+<td><code>rank</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td><code>False</code></td>
+<td><code>True</code></td>
+<td>The rank of the process, fixed to <code>0</code>.</td>
+</tr>
+<tr>
+<td><code>world_size</code></td>
+<td><code>int</code></td>
+<td><code>1</code></td>
+<td><code>False</code></td>
+<td><code>True</code></td>
+<td>The number of processes, fixed to <code>1</code>.</td>
+</tr>
+<tr>
+<td><code>process_group</code></td>
+<td><code>Optional[ProcessGroup]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>True</code></td>
+<td>The process group for distributed training, fixed to <code>None</code>.</td>
+</tr>
+<tr>
+<td><code>vocab_size</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The size of the vocabulary used in <code>ParallelVocabEmbedding</code>and <code>lm_head</code> layer (<em>See <a target="_blank" rel="noopener" href="https://github.com/NJUDeepEngine/llm-assignments/blob/a4-ref/tasks/task3.md">Task3</a></em>).</td>
+</tr>
+<tr>
+<td><code>vocab_init_mean</code></td>
+<td><code>float</code></td>
+<td><code>0.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The mean value of the normal distribution to initialize the vocabulary embedding table in <code>ParallelVocabEmbedding</code>.</td>
+</tr>
+<tr>
+<td><code>vocab_init_std</code></td>
+<td><code>float</code></td>
+<td><code>1.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The standard deviation of the normal distribution to initialize the vocabulary embedding table in <code>ParallelVocabEmbedding</code>.</td>
+</tr>
+<tr>
+<td><code>rope_base</code></td>
+<td><code>int</code></td>
+<td><code>10000</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The base value to control the frequences in <code>NTKAwareRoPE</code>.</td>
+</tr>
+<tr>
+<td><code>rope_ratio</code></td>
+<td><code>int</code></td>
+<td><code>1</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The scaling ratio to extraplolate the frequencies used in <code>NTKAwareRoPE</code>.</td>
+</tr>
+<tr>
+<td><code>rope_dynamic</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>Whether to dynamically update cached cos/sin embeddings in <code>NTKAwareRoPE</code>.</td>
+</tr>
+<tr>
+<td><code>group_size</code></td>
+<td><code>Optional[int]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The group size to split the hidden size in <code>GroupRMSNorm</code>.</td>
+</tr>
+<tr>
+<td><code>eps</code></td>
+<td><code>float</code></td>
+<td><code>1e-5</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The epsilon value to avoid numerical instability in <code>GroupRMSNorm</code>.</td>
+</tr>
+<tr>
+<td><code>norm_init_range</code></td>
+<td><code>tuple</code></td>
+<td><code>(-1.0, 1.0)</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The range of the uniform distribution to initialize the scaling parameters in <code>GroupRMSNorm</code>.</td>
+</tr>
+<tr>
+<td><code>proj_init_seed</code></td>
+<td><code>int</code></td>
+<td><code>42</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The random seed to initialize projection matrices, including <code>qkv_proj</code>, <code>o_proj</code>, as well as the <code>lm_head</code> if <code>lm_head_tied=False</code>.</td>
+</tr>
+<tr>
+<td><code>proj_init_mean</code></td>
+<td><code>float</code></td>
+<td><code>0.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The mean value of the normal distribution to initialize projection matrices.</td>
+</tr>
+<tr>
+<td><code>proj_init_std</code></td>
+<td><code>float</code></td>
+<td><code>1.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The standard deviation of the normal distribution to initialize projection matrices.</td>
+</tr>
+<tr>
+<td><code>lm_head_tied</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>Whether to tie the weights of the <code>lm_head</code> layer to the one of the vocab embedding layer (<em>See <a target="_blank" rel="noopener" href="https://github.com/NJUDeepEngine/llm-assignments/blob/a4-ref/tasks/task3.md">Task3</a></em>).</td>
+</tr>
+<tr>
+<td><code>online_attn_block_size</code></td>
+<td><code>Optional[int]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The block size for <code>OnlineSlidingWindowAttn</code>. If <code>None</code>, use <code>OfflineSlidingWindowAttn</code>instead.</td>
+</tr>
+<tr>
+<td><code>head_dim</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The dimension of each attention head.</td>
+</tr>
+<tr>
+<td><code>num_q_head</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The number of query heads.</td>
+</tr>
+<tr>
+<td><code>num_kv_head</code></td>
+<td><code>int</code></td>
+<td><code>None</code></td>
+<td><code>True</code></td>
+<td><code>False</code></td>
+<td>The number of key/value heads.</td>
+</tr>
+<tr>
+<td><code>qkv_pack_format</code></td>
+<td><code>AttnQKVPackFormat</code></td>
+<td><code>AttnQKVPackFormat.Q_K_V</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The packing format for QKV tensors.</td>
+</tr>
+<tr>
+<td><code>qkv_layout</code></td>
+<td><code>AttnQKVLayout</code></td>
+<td><code>AttnQKVLayout.BSHD</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The shape layout for QKV tensors.</td>
+</tr>
+<tr>
+<td><code>window_size</code></td>
+<td><code>Optional[int]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The window size for sliding window attention.</td>
+</tr>
+<tr>
+<td><code>causal</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>Whether to apply causal mask to the attention.</td>
+</tr>
+<tr>
+<td><code>softmax_dropout_rate</code></td>
+<td><code>float</code></td>
+<td><code>0.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The dropout rate applied after the softmax operation.</td>
+</tr>
+<tr>
+<td><code>softmax_dropout_seed</code></td>
+<td><code>int</code></td>
+<td><code>42</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The random seed for softmax dropout.</td>
+</tr>
+<tr>
+<td><code>softmax_scale</code></td>
+<td><code>Optional[float]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The scaling factor applied to the softmax logits.</td>
+</tr>
+<tr>
+<td><code>softmax_cap</code></td>
+<td><code>Optional[float]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The capping value to apply <code>softmax capping</code> to adaptively control the magnitude of the softmax logits, if <code>None</code>, use <code>softmax temperature</code> trick instead.</td>
+</tr>
+<tr>
+<td><code>softmax_temp</code></td>
+<td><code>float</code></td>
+<td><code>1.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The temperature value to apply <code>softmax temperature</code> to control the sharpness of the softmax distribution when <code>softmax capping</code> is disabled.</td>
+</tr>
+<tr>
+<td><code>softmax_clip_range</code></td>
+<td><code>Tuple[float, float]</code></td>
+<td><code>(0.0, 1.0)</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The clipping range to apply <code>softmax clipping</code> to prevent the outliers in the softmax weights.</td>
+</tr>
+<tr>
+<td><code>apply_qk_norm</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>Whether to apply <code>QK layer normalization</code> to the query and key tensors.</td>
+</tr>
+<tr>
+<td><code>qk_norm_group_size</code></td>
+<td><code>Optional[int]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The specific group size for <code>QK layer normalization</code> if enabled. Other configurations for <code>QK layer normalization</code> share the same as above.</td>
+</tr>
+<tr>
+<td><code>activation_type</code></td>
+<td><code>MLPActivationType</code></td>
+<td><code>MLPActivationType.SILU</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The activation function type used in the mlp layer.</td>
+</tr>
+<tr>
+<td><code>lora_rank</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The rank for LoRA.</td>
+</tr>
+<tr>
+<td><code>lora_alpha</code></td>
+<td><code>Optional[float]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The alpha parameter for LoRA.</td>
+</tr>
+<tr>
+<td><code>lora_dropout_rate</code></td>
+<td><code>float</code></td>
+<td><code>0.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The dropout rate for LoRA layers.</td>
+</tr>
+<tr>
+<td><code>lora_dropout_seed</code></td>
+<td><code>int</code></td>
+<td><code>42</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The random seed for LoRA dropout.</td>
+</tr>
+<tr>
+<td><code>lora_init_base_seed</code></td>
+<td><code>int</code></td>
+<td><code>42</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The base random seed to initialize the parameters of LoRA.</td>
+</tr>
+<tr>
+<td><code>num_experts</code></td>
+<td><code>Optional[int]</code></td>
+<td><code>None</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The number of experts for <code>SparseMLPWithLoRA</code>. If <code>None</code>, then use <code>DenseMLPWithLoRA</code> instead.</td>
+</tr>
+<tr>
+<td><code>moe_topk</code></td>
+<td><code>int</code></td>
+<td><code>1</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The top-k value for expert routing in <code>SparseMLPWithLoRA</code>.</td>
+</tr>
+<tr>
+<td><code>gate_init_mean</code></td>
+<td><code>float</code></td>
+<td><code>0.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The mean value of the normal distribution to initialize the gating parameters.</td>
+</tr>
+<tr>
+<td><code>gate_init_std</code></td>
+<td><code>float</code></td>
+<td><code>1.0</code></td>
+<td><code>False</code></td>
+<td><code>False</code></td>
+<td>The standard deviation of the normal distribution to initialize the gating parameters.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://big-trex.github.io/2025/07/13/A4-attention-module/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1318,7 +1946,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
       <div class="site-state-item site-state-posts">
           <a href="/LLM-Blog/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
