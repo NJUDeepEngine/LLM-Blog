@@ -212,3 +212,31 @@ $$
 ## Online Sliding-Window Attention 小结
 
 总结来说，你需要实现 `OnlineSlidingWindowAttn` 模块，该模块以块索引 `block_idx_q` 和 `block_idx_kv` 为输入，接收格式为 `AttnQKVLayout.BSHD` 布局和 `AttnQKVPackFormat.Q_K_V` 打包格式的一组张量 $\mathbf{Q}_{\text{bq}_i},\mathbf{K}_{\text{bkv}_j},\mathbf{V}_{\text{bkv}_j}$，对该块应用本地的离线滑动窗口注意力操作，计算出该局部输出 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_j}$ 及其对应的局部统计量 $\text{lse}_{bq_i}^{bkv_j}$，并将其就地更新到给定的全局输出 $\mathbf{O}$ 和全局统计量 `lse` 中。
+
+# References
+
+* [Nvidia Methods of Improving LLM Training Stability](https://arxiv.org/pdf/2410.16682)
+* [Llama Attention Layer](https://github.com/huggingface/transformers/blob/v4.46.3/src/transformers/models/llama/modeling_llama.py#L275)
+* [Google MHA paper](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)
+* [Google MQA paper](https://arxiv.org/pdf/1911.02150)
+* [Google GQA paper](https://arxiv.org/pdf/2305.13245)
+* [Pytorch Repeat Interleave Functional](https://pytorch.org/docs/stable/generated/torch.repeat_interleave.html#torch.repeat_interleave)
+* [Transformer paper](https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)
+* [Online Softmax Paper](https://arxiv.org/pdf/2112.05682)
+* [LSE Wiki](https://en.wikipedia.org/wiki/LogSumExp)
+* [Pytorch LSE Functional](https://pytorch.org/docs/stable/generated/torch.logsumexp.html#torch-logsumexp)
+* [Pytorch Log1p Functional](https://pytorch.org/docs/stable/generated/torch.log1p.html#torch.log1p)
+* [Pytorch Softplus Functional](https://pytorch.org/docs/stable/generated/torch.nn.functional.softplus.html#torch.nn.functional.softplus)
+* [Nvidia Methods of Improving LLM Training Stability](https://arxiv.org/pdf/2410.16682)
+* [Llama Attention Layer](https://github.com/huggingface/transformers/blob/v4.46.3/src/transformers/models/llama/modeling_llama.py#L275)
+* [Pytorch Repeat Interleave Functional](https://pytorch.org/docs/stable/generated/torch.repeat_interleave.html#torch.repeat_interleave)
+* [Transformer paper](https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)
+* [Flash Attention 2 Paper](https://arxiv.org/pdf/2307.08691.pdf)
+* [Flash Attention Interface](https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/flash_attn_interface.py)
+* [Pytorch SDPA Functional](https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html#torch.nn.functional.scaled_dot_product_attention)
+* [Pytorch FlexAttention Functional](https://pytorch.org/docs/main/nn.attention.flex_attention.html#module-torch.nn.attention.flex_attention)
+
+
+提示：以上是一些可能对你的任务有帮助的参考资料，也可以加深或拓宽你对 Transformer 中注意力机制的理解。
+
+！！请记住：查阅论文、源码以及官方文档，并从中进行思考和学习，是一项基本且至关重要的能力。请尽量不要过度依赖一些带有偏见或内容浅显的博客，例如 CSDN！！

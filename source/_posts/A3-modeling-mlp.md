@@ -166,7 +166,26 @@ $$
 2. 接收输入 $\mathbf{X}$，对于每个 `token t`，计算其 top-k expert 子集，仅对与当前 `rank` 管理的本地 expert 集合 R 的交集执行 `forward` 计算流程，对于未路由到本地 experts 的 `token`，其输出保持为全零向量。
 3.	最终返回与输入 $\mathbf{X}$ 具有相同形状的输出 `hidden states` $\mathbf{O}$，最终某个 `token t` 的非零输出为路由到的本地 experts 所产生的子输出的加权和。
 
+# References
 
-以下是一些可能对你完成该任务有帮助的参考资料，也可以用于加深或拓宽你对 dense MLP 层、sparse-moe MLP 层、LoRA Adapters 和激活函数的理解：
+* [Llama MLP Module](https://github.com/huggingface/transformers/blob/v4.46.3/src/transformers/models/llama/modeling_llama.py#L229)
+* [ChatGLM MLP Module](https://huggingface.co/THUDM/chatglm3-6b/blob/main/modeling_chatglm.py#L459)
+* [GLU Paper](https://arxiv.org/abs/1612.08083)
+* [GLU Variants Paper](https://arxiv.org/abs/2002.05202)
+* [PEFT Documentation](https://huggingface.co/docs/peft/index)
+* [LoRA Paper](https://arxiv.org/abs/2106.09685)
+* [PEFT LoRA-Linear Layer Implementation](https://github.com/huggingface/peft/blob/main/src/peft/tuners/lora/layer.py#L400)
+* [Pytorch SiLU Functional](https://pytorch.org/docs/stable/generated/torch.nn.functional.silu.html)
+* [Pytorch GELU Functional](https://pytorch.org/docs/stable/generated/torch.nn.functional.gelu.html)
+* [Pytorch ReLU Functional](https://pytorch.org/docs/stable/generated/torch.nn.functional.relu.html)
+* [Pytorch Sigmoid Functional](https://pytorch.org/docs/stable/generated/torch.nn.functional.sigmoid.html)
+* [Pytorch Kaiming Normal Initialization](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.kaiming_normal_)
+* [Pytorch Xavier Normal Initialization](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.xavier_normal_)
+* [MoE Paper](https://arxiv.org/abs/1701.06538)
+* [Mixtral Paper](https://arxiv.org/abs/2401.04088)
+* [Mixtral MoE MLP Module](https://github.com/huggingface/transformers/blob/v4.46.3/src/transformers/models/mixtral/modeling_mixtral.py#L610)
 
-##TODO 补充参考文献
+以上是一些可能对你完成任务有帮助的参考资料，也可以用来加深或拓宽你对 `Dense MLP` 层、`LoRA Adapter`、`稀疏 MoE（Mixture of Experts）MLP` 以及深度学习中激活函数的理解。
+
+
+！！请记住：查阅论文、源码以及官方文档，并从中进行思考和学习，是一项基本且至关重要的能力。请尽量不要过度依赖一些带有偏见或内容浅显的博客，例如 CSDN！！
