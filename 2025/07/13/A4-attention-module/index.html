@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://big-trex.github.io/2025/07/13/A4-attention-module/window.svg">
 <meta property="og:image" content="https://big-trex.github.io/2025/07/13/A4-attention-module/bottom-right.svg">
 <meta property="article:published_time" content="2025-07-13T03:01:59.000Z">
-<meta property="article:modified_time" content="2025-07-25T08:06:36.817Z">
+<meta property="article:modified_time" content="2025-07-25T08:19:23.419Z">
 <meta property="article:author" content="DeepEngine">
 <meta property="article:tag" content="Attention">
 <meta property="article:tag" content="Mask">
@@ -192,7 +192,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-25 16:06:36" itemprop="dateModified" datetime="2025-07-25T16:06:36+08:00">2025-07-25</time>
+                <time title="修改时间：2025-07-25 16:19:23" itemprop="dateModified" datetime="2025-07-25T16:19:23+08:00">2025-07-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -358,6 +358,30 @@ lse := \text{lse}(\mathbf{X}) = \log(\exp(lse_1) + \exp(lse_2)) = lse_{1} + \log
 <li>需要注意的是，<code>OnlineSlidingWindowAttn</code> 模块中 <code>forward</code> 方法的每一次 <code>online attention</code> 计算，都应被视为对应 <code>OfflineSlidingWindowAttn</code> 模块中的一次内部迭代步骤（inner iterative step）。即如果我们遍历每一个合法的块索引：$\text{bq}_i \in [0, \frac{\text{sq}}{\text{block_size_q}})$，$\text{bkv}_j \in [0, \frac{\text{skv}}{\text{block_size_kv}})$，并依次在该在线模块中执行对应的 <code>forward</code> 操作，那么最终更新得到的全局输出 $\mathbf{O}$，在忽略数值累积误差（accumulation error）的前提下，应当与 <code>OfflineSlidingWindowAttn</code> 模块输出的结果完全一致。</li>
 </ul>
 <h2 id="Online-Sliding-Window-Attention-小结"><a href="#Online-Sliding-Window-Attention-小结" class="headerlink" title="Online Sliding-Window Attention 小结"></a>Online Sliding-Window Attention 小结</h2><p>总结来说，你需要实现 <code>OnlineSlidingWindowAttn</code> 模块，该模块以块索引 <code>block_idx_q</code> 和 <code>block_idx_kv</code> 为输入，接收格式为 <code>AttnQKVLayout.BSHD</code> 布局和 <code>AttnQKVPackFormat.Q_K_V</code> 打包格式的一组张量 $\mathbf{Q}_{\text{bq}_i},\mathbf{K}_{\text{bkv}_j},\mathbf{V}_{\text{bkv}_j}$，对该块应用本地的离线滑动窗口注意力操作，计算出该局部输出 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_j}$ 及其对应的局部统计量 $\text{lse}_{bq_i}^{bkv_j}$，并将其就地更新到给定的全局输出 $\mathbf{O}$ 和全局统计量 <code>lse</code> 中。</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2410.16682">Nvidia Methods of Improving LLM Training Stability</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/huggingface/transformers/blob/v4.46.3/src/transformers/models/llama/modeling_llama.py#L275">Llama Attention Layer</a></li>
+<li><a target="_blank" rel="noopener" href="https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf">Google MHA paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1911.02150">Google MQA paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2305.13245">Google GQA paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.repeat_interleave.html#torch.repeat_interleave">Pytorch Repeat Interleave Functional</a></li>
+<li><a target="_blank" rel="noopener" href="https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf">Transformer paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2112.05682">Online Softmax Paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/LogSumExp">LSE Wiki</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.logsumexp.html#torch-logsumexp">Pytorch LSE Functional</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.log1p.html#torch.log1p">Pytorch Log1p Functional</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.softplus.html#torch.nn.functional.softplus">Pytorch Softplus Functional</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2410.16682">Nvidia Methods of Improving LLM Training Stability</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/huggingface/transformers/blob/v4.46.3/src/transformers/models/llama/modeling_llama.py#L275">Llama Attention Layer</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.repeat_interleave.html#torch.repeat_interleave">Pytorch Repeat Interleave Functional</a></li>
+<li><a target="_blank" rel="noopener" href="https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf">Transformer paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2307.08691.pdf">Flash Attention 2 Paper</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/flash_attn_interface.py">Flash Attention Interface</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html#torch.nn.functional.scaled_dot_product_attention">Pytorch SDPA Functional</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/main/nn.attention.flex_attention.html#module-torch.nn.attention.flex_attention">Pytorch FlexAttention Functional</a></li>
+</ul>
+<p>提示：以上是一些可能对你的任务有帮助的参考资料，也可以加深或拓宽你对 Transformer 中注意力机制的理解。</p>
+<p>！！请记住：查阅论文、源码以及官方文档，并从中进行思考和学习，是一项基本且至关重要的能力。请尽量不要过度依赖一些带有偏见或内容浅显的博客，例如 CSDN！！</p>
 
     </div>
 
@@ -443,7 +467,7 @@ lse := \text{lse}(\mathbf{X}) = \log(\exp(lse_1) + \exp(lse_2)) = lse_{1} + \log
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Offline-Sliding-Window-Attention"><span class="nav-number">1.</span> <span class="nav-text">Task 1: Offline Sliding-Window Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.</span> <span class="nav-text">TODO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Offline-Sliding-Window-Attention-%E5%B0%8F%E7%BB%93"><span class="nav-number">1.2.</span> <span class="nav-text">Offline Sliding-Window Attention 小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Optional-Task2%EF%BC%9AOnline-Sliding-Window-Attention"><span class="nav-number">2.</span> <span class="nav-text">[Optional] Task2：Online Sliding-Window Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-1"><span class="nav-number">2.1.</span> <span class="nav-text">TODO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Online-Sliding-Window-Attention-%E5%B0%8F%E7%BB%93"><span class="nav-number">2.2.</span> <span class="nav-text">Online Sliding-Window Attention 小结</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Offline-Sliding-Window-Attention"><span class="nav-number">1.</span> <span class="nav-text">Task 1: Offline Sliding-Window Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.</span> <span class="nav-text">TODO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Offline-Sliding-Window-Attention-%E5%B0%8F%E7%BB%93"><span class="nav-number">1.2.</span> <span class="nav-text">Offline Sliding-Window Attention 小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Optional-Task2%EF%BC%9AOnline-Sliding-Window-Attention"><span class="nav-number">2.</span> <span class="nav-text">[Optional] Task2：Online Sliding-Window Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-1"><span class="nav-number">2.1.</span> <span class="nav-text">TODO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Online-Sliding-Window-Attention-%E5%B0%8F%E7%BB%93"><span class="nav-number">2.2.</span> <span class="nav-text">Online Sliding-Window Attention 小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">3.</span> <span class="nav-text">References</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
