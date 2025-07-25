@@ -4,6 +4,7 @@ date: 2025-07-13 11:01:59
 tags:
   - Attention
   - Mask
+  - lse
 categories:
   - Assignment
 comments: false
@@ -97,9 +98,9 @@ $$
 - **AttnQKVPackFormat.QKV**：此格式下，$\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$ 都沿 `num_heads` 维度打包成一个张量，这种情况下，$\mathbf{Q}$ 和 $\mathbf{K}$、$\mathbf{V}$ 的其他维度（如序列长度、batch 大小等）必须相同，以保证解包后的结构正确。
 
 另外，我们还在 `src/modeling/attention.py` 中设计了另一个枚举类 `AttnQKVLayout`，用于定义 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$ 张量的形状布局（shape layout），以支持不同的输入格式：
-- **AttnQKVLayout.BSHD**：最常见的布局形式，满足 $\mathbf{Q},\mathbf{K},\mathbf{V} \in \mathbb{R}^{\text{batch\_size} \times \text{seq\_len\_kv} \times \text{num\_head\_kv} \times \text{head\_dim}}$ ，记为 `bshd`；
-- **AttnQKVLayout.SBHD**：更适用于**分布式环境（distributed environment）** 的布局，满足 $\mathbf{Q},\mathbf{K},\mathbf{V} \in \mathbb{R}^{\text{seq\_len\_kv} \times \text{batch\_size} \times \text{num\_head\_kv} \times \text{head\_dim}}$ ，记为 `sbhd`；
-- **AttnQKVLayout.THD**：最通用的布局格式，也称为 `varlen layout`（变长布局），满足 $\mathbf{Q},\mathbf{K},\mathbf{V} \in \mathbb{R}^{\text{total\_seq\_len} \times \text{num\_head\_kv} \times \text{head\_dim}}$，在这种布局中，不存在显式的 `batch` 维度，所有长度不一的序列会沿着 `sequence` 维度拼接在一起，在这种情况下需要额外提供两个辅助输入，用于标识每条序列在拼接后的张量中的位置：
+- **AttnQKVLayout.BSHD**：最常见的布局形式，满足 $\mathbf{Q},\mathbf{K},\mathbf{V} \in \mathbb{R}^{\text{batch\_size} \times \text{seq\_len\_kv} \times \text{num\_head} \times \text{head\_dim}}$ ，记为 `bshd`；
+- **AttnQKVLayout.SBHD**：更适用于**分布式环境（distributed environment）** 的布局，满足 $\mathbf{Q},\mathbf{K},\mathbf{V} \in \mathbb{R}^{\text{seq\_len\_kv} \times \text{batch\_size} \times \text{num\_head} \times \text{head\_dim}}$ ，记为 `sbhd`；
+- **AttnQKVLayout.THD**：最通用的布局格式，也称为 `varlen layout`（变长布局），满足 $\mathbf{Q},\mathbf{K},\mathbf{V} \in \mathbb{R}^{\text{total\_seq\_len} \times \text{num\_head} \times \text{head\_dim}}$，在这种布局中，不存在显式的 `batch` 维度，所有长度不一的序列会沿着 `sequence` 维度拼接在一起，在这种情况下需要额外提供两个辅助输入，用于标识每条序列在拼接后的张量中的位置：
   - `cu_seqlens_q`；
   - `cu_seqlens_kv`；
   这两个张量都是 `int32` 类型，形状为 `[batch_size + 1]`，其中每一段 `[[cu_seqlens}[i], cu_seqlens[i+1]]` 表示第 i 个样本在 $\mathbf{Q}$ 或 $\mathbf{K}$、$\mathbf{V}$ 中的 起止区间（start-end），在 `varlen layout` 场景的掩码模式可参考下图。（更多示例请参考 Flash Attention 接口中的相关内容。）
@@ -124,3 +125,90 @@ $$
 总结来说，你需要实现 `OfflineSlidingWindowAttn` 模块。该模块接收以不同打包格式（`packing formats`）和不同布局（`layouts`）表示的 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$ 作为输入（如果布局为 `AttnQKVLayout.THD`，则需额外提供 `cu_seqlens_q` 和 `cu_seqlens_kv`），执行上述所描述的 `offline sliding window attention` 操作，并返回一个与 $\mathbf{Q}$ 使用相同布局的输出张量 $\mathbf{O}$。
 
 
+# [Optional] Task2：Online Sliding-Window Attention
+
+在 `Task1` 中我们已实现了 `OfflineSlidingWindowAttn` 模块，基于此，我们继续实现 `OnlineSlidingWindowAttn` 模块，它是前者的在线版本（online version），这里**只考虑 `AttnQKVLayout.BSHD` 的场景**。在 Transformer 架构中，`Attention` 模块实际上是最严重的性能瓶颈，具体而言，`Attention` 模块的计算开销和内存占用通常都是关于数据序列长度的平方级复杂度（quadratic complexity）。但我们可以通过将 `offline softmax` 转换为在线 `online softmax` 来将内存复杂度降低到近似线性（具体参考文献中的 Online Softmax Paper）。
+
+在标准的 `Scaled Dot-Product Attention` 中，对于长度为 $L$ 的序列，首先需要计算一个 $L \times L$ 的注意力矩阵（Attention matrix），其计算和存储复杂度均为 $\mathcal{O}(L^2)$。这会导致在长序列任务中显著的内存压力，尤其是在多层多头的 Transformer 模型中尤为突出。此外，注意力矩阵作为中间结果，会被存储在高带宽存储器（`HBM`，如 GPU 显存）中，而后续的 `softmax` 归一化和上下文向量计算则往往在片上缓存（如 `SRAM`）中进行，因而整个 `Attention` 计算过程中需要频繁地在 `HBM` 和 `SRAM` 之间搬运中间结果。由于 HBM 的延迟和带宽限制，相比于计算能力，这种数据搬运会带来显著的开销，进一步限制了 `Attention` 模块在长序列上的效率与扩展性。
+
+为了缓解显存压力、降低数据搬运开销和提高拓展性，一个直观的想法就是对数据分块（**Tilling**）计算，这一思想广泛应用在如 `Flash Attention` 和各种分布式 `Attention` 算法当中。即对查询向量 $\mathbf{Q}$ 在 `sq-dim` 等分为多个块（blocks），记为 `bq-dim`，满足 $\text{bq}_i \in [0, \frac{\text{sq}}{\text{block\_size\_q}})$，同时将键 $\mathbf{K}$ 和值向量 $\mathbf{V}$ 在 `skv-dim` 等分为多个块（blocks），记为 `bkv-dim`，满足 $\text{bkv}_j \in [0, \frac{\text{skv}}{\text{block\_size\_kv}})$，每次直接对一个块 $\mathbf{Q}_{\text{bq}_i},\mathbf{K}_{\text{bkv}_j},\mathbf{V}_{\text{bkv}_j}$ 进行一次完整的 `Attention` 计算，得到该 block 的局部结果 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_j}$，满足 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_j} \in \mathbb{R}^{\text{batch\_size} \times \text{block\_size\_q} \times \text{num\_head\_q} \times \text{head\_dim}}$，记为 `[b, bq, hq, hd]`。最终，对于 $\text{bq}_i$，会得到共 **bkv 个局部结果**，记为 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_0}, \mathbf{O}_{\text{bq}_i}^{\text{bkv}_1}, \dots, \mathbf{O}_{\text{bq}_i}^{\text{bkv}_{bkv-1}}$，要将局部输出 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_j}$ 准确聚合到全局输出 $\mathbf{O}_{\text{bq}_i}$，关键在于解决局部 `softmax` 和全局 `softmax` 权重归一化因子不一致的问题。因为 **`softmax` 操作是 `row-wise`** 的，每个局部 `Attention block` 中的 `softmax` 是在不同的上下文范围内归一化的，它们不能直接加权组合。
+
+而聚合局部输出的关键在于为每个局部结果计算正确的归一化系数。如下面 `stable softmax` 分解公式所示，如果我们将一个行向量 $X \in \mathbb{R}^n$ 拆分为两个部分：$X_1 \in \mathbb{R}^{n_1}$ 和 $X_2 \in \mathbb{R}^{n_2}$，其中 $n_1 + n_2 = n$，那么从局部 `softmax`（即 $X_1$ 和 $X_2$ 的 `softmax`）还原整个向量 $X$ 的 `softmax` 结果的关键在于：**重新计算新的归一化因子 `l` 和新的最大值 `m`**（具体可见 Flash Attention 论文）：
+
+如果：
+$$
+\text{softmax}(\mathbf{X}) = \text{softmax}([\mathbf{X}_1, \mathbf{X}_2])
+$$
+
+那么：
+$$
+\cfrac{\exp(\mathbf{X} - m)}{l} = \left[ c_1 \cdot \text{softmax}(\mathbf{X}_1), c_2 \cdot \text{softmax}(\mathbf{X}_2)\right] = \left[ c_1 \cdot \cfrac{\exp(\mathbf{X}_1 - m_1)}{l_1}, c_2 \cdot \cfrac{\exp(\mathbf{X}_2 - m_2)}{l_2}\right]
+$$
+
+$$
+\text{其中} \space c_i = \cfrac{l_i\cdot \exp(m_i-m)}{l}, \space m := \max{(\mathbf{X})} = \max{(m_1, m_2)}, \space l := \sum\exp(\mathbf{X} - m) = \sum\exp(m_i - m) \cdot l_i, \space i\in \{1,2\}
+$$
+
+为了简化上述 `softmax` 的归一化校准过程，我们也可以借助 `log-sum-exp` 运算符 $\text{lse}$（参见参考文献中的 PyTorch LSE Functional），并参考 `FlashAttention 2` 的策略（详见参考文献中的 Flash Attention 2 Paper），将 `stable softmax` 操作重写为如下形式：
+
+$$
+\begin{align}
+&\text{softmax}(\mathbf{X}) = \cfrac{\exp(\mathbf{X} - m)}{\text{sum}(\exp(\mathbf{X} - m))} = \cfrac{\exp(\mathbf{X} - m)}{\exp(\log(\text{sum}(\exp(X\mathbf{X} - m))))} \\
+&= \cfrac{\exp(\mathbf{X} - m)}{\exp(\text{lse}(\mathbf{X} - m))} = \exp(\mathbf{X} - m - \text{lse}(\mathbf{X} - m)) \\
+&= \exp(\mathbf{X} - (m + \text{lse}(\mathbf{X} - m))) = \exp(\mathbf{X} - \text{lse}(\mathbf{X}))
+\end{align}
+$$
+
+其中最后一步利用了 `log-sum-exp（lse）` 的一条性质 $\text{lse}(\mathbf{X} ) = \max{(\mathbf{X} )} + \text{lse}(\mathbf{X} - \max{(\mathbf{X} )})$（参见参考文献中的 LSE Wiki）。因此，`stable softmax` 的分解也可以使用 `lse` 运算重写为如下形式：
+
+如果：
+$$
+\text{softmax}(\mathbf{X}) = \text{softmax}([\mathbf{X}_1, \mathbf{X}_2])
+$$
+
+那么：
+$$
+\exp(\mathbf{X} - lse) = \left[ c_1 \cdot \text{softmax}(\mathbf{X}_1), c_2 \cdot \text{softmax}(\mathbf{X}_2)\right] = \left[ c_1 \cdot \exp(\mathbf{X}_1 - lse_1), c_2 \cdot \exp(\mathbf{X}_2 - lse_2)\right]
+$$
+
+其中：
+$$
+c_i = \exp(lse_i - lse), \space i\in \{1,2\}, \space\text{and}
+$$
+
+$$
+lse := \text{lse}(\mathbf{X}) = \log(\exp(lse_1) + \exp(lse_2)) = lse_{1} + \log(1 + \exp(lse_{2} - lse_{1}))
+$$
+
+$$
+= lse_{max} + \log(1 + \exp(lse_{min} - lse_{max})) = lse_{max} + \text{log1p}(\exp(lse_{min} - lse_{max})) = lse_{max} + \text{softplus}(lse_{min} - lse_{max})
+$$
+
+$$
+\text{其中} \space lse_{max} = \max{(lse_1, lse_2)}, \space lse_{min} = \min{(lse_1, lse_2)}
+$$
+
+上述最后三步的设计是为了应对 $\exp$ 函数可能出现的数值爆炸（exp explosion）问题。具体做法是提取输入向量中的最大值作为加性项，以避免指数项过大变成正无穷，同时结合使用 `log1p` 或 `softplus` 等操作以增强数值稳定性（参见参考文献中的 PyTorch Log1p / Softplus Functional）。因此，在每一步 `online attention` 计算中，我们只需对一个局部 `block` 应用 `Attention`，得到对应的局部输出 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_j}$，并同时记录该 `block` 的局部统计量 $\text{lse}_{bq_i}^{bkv_j}$。随后，我们使用这些局部统计值来更新全局统计量 $\text{lse}$，以此校准全局输出 $\mathbf{O}$，对应于行索引范围 $[\text{bq}_i \cdot \text{block\_size\_q},\ (\text{bq}_{i+1}) \cdot \text{block\_size\_q})$，正如前述公式所示。
+
+## TODO
+
+**完成 `src/modeling/attention.py` 中的 `OnlineSlidingWindowAttn` 模块**，实现上述注意力机制运算，具体细节包括：
+- 首先，我们沿用 `Task1` 中提到的注意事项。
+- 为了充分利用在 `Task1` 中实现的 `OfflineSlidingWindowAttn` 模块，`OnlineSlidingWindowAttn` 模块直接继承自前者，但其输入参数在多个方面做出了简化与调整：
+  - `OnlineSlidingWindowAttn` 模块仅接受单个 `block` 的 $\mathbf{Q}_{\text{bq}_i},\mathbf{K}_{\text{bkv}_j},\mathbf{V}_{\text{bkv}_j}$ 作为输入，且采用固定的输入格式 `AttnQKVLayout.BSHD` 和打包格式 `AttnQKVPackFormat.Q_K_V`，因此，无需在输入参数中指定   `layout` 和 `packing` 格式。因此，也不再需要 `cu_seqlens_q` 或 `cu_seqlens_kv`（这些用于支持变长序列，已在此模块中约束为定长）。
+  - `softmax clipping` 和 `softmax dropout` 是为了 `global stable softmax` 权重的训练而设计的。但在 `OnlineSlidingWindowAttn` 中，我们是按块增量计算，因此无法直接作用于 `softmax`，因此，这两个策略在该模块中被**禁用**。
+  - 为了在初始化阶段就为 `online attention` 的前向计算做好准备，`__init__` 方法新增参数，你可以在 `__init__` 中利用这些参数预计算 `full attention mask` 等静态信息，以提升运行时效率：
+    - `block_size`：每个块的序列长度；
+    - `seqlen`：$\mathbf{Q}$ 和 $\mathbf{K}, \mathbf{V}$ 的全局序列长度。
+  - `forward` 方法的 `q、k、v` 输入只对应于单个 `attention block`：$\mathbf{Q}_{\text{bq}_i},\mathbf{K}_{\text{bkv}_j},\mathbf{V}_{\text{bkv}_j}$，它们的 `block` 索引由 `block_idx_q` 和 `block_idx_kv` 指定。
+  - `forward` 方法额外接收两个全局变量作为参数，在每次 `forward` 过程中，你只需要 **就地更新（in-place update）** 这两个变量，不需要显式返回值：
+    - `global_o`：全局输出张量 $\mathbf{O}$，初始为 0 或已有部分更新；
+    - `global_lse`：全局 `log-sum-exp` 张量 $\text{lse}$，初始为 $-\infty$ 或已有部分统计值。
+- `q、k、v、global_o` 的 `dtype` 和 `device` 保持一致；为了在 `softmax` 累积过程中减少数值误差，`global_lse` 的数据类型固定为 `torch.float32`，以维持高精度。
+- 当 `seqlen` 无法被 `block_size` 整除时，最后一个不完整的 `block` 会在序列维度（sequence-dim）尾部进行 `zero padding`，以补齐到整块的 `block_size` 长度，填充部分不参与真实计算，只是为了方便块对齐处理。
+- `block_idx_q` 和 `block_idx_kv` 一定在各自合法范围内。
+- 需要注意的是，`OnlineSlidingWindowAttn` 模块中 `forward` 方法的每一次 `online attention` 计算，都应被视为对应 `OfflineSlidingWindowAttn` 模块中的一次内部迭代步骤（inner iterative step）。即如果我们遍历每一个合法的块索引：$\text{bq}_i \in [0, \frac{\text{sq}}{\text{block\_size\_q}})$，$\text{bkv}_j \in [0, \frac{\text{skv}}{\text{block\_size\_kv}})$，并依次在该在线模块中执行对应的 `forward` 操作，那么最终更新得到的全局输出 $\mathbf{O}$，在忽略数值累积误差（accumulation error）的前提下，应当与 `OfflineSlidingWindowAttn` 模块输出的结果完全一致。
+
+## Online Sliding-Window Attention 小结
+
+总结来说，你需要实现 `OnlineSlidingWindowAttn` 模块，该模块以块索引 `block_idx_q` 和 `block_idx_kv` 为输入，接收格式为 `AttnQKVLayout.BSHD` 布局和 `AttnQKVPackFormat.Q_K_V` 打包格式的一组张量 $\mathbf{Q}_{\text{bq}_i},\mathbf{K}_{\text{bkv}_j},\mathbf{V}_{\text{bkv}_j}$，对该块应用本地的离线滑动窗口注意力操作，计算出该局部输出 $\mathbf{O}_{\text{bq}_i}^{\text{bkv}_j}$ 及其对应的局部统计量 $\text{lse}_{bq_i}^{bkv_j}$，并将其就地更新到给定的全局输出 $\mathbf{O}$ 和全局统计量 `lse` 中。
