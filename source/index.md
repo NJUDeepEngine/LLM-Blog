@@ -1,11 +1,9 @@
 ---
 title: About
 ---
-Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).
+Welcome to our assignments! A collection of assignments on large language models, serving for both beginners to get started and pros to practice advanced tech.
 
-## Quick Start
-
-## 📄 文章索引
+# 📄 文章索引
 
 1. {% post_link A0-onboarding A0 Onboarding %}
 2. {% post_link A1-matmul A1 Matmul  %}
