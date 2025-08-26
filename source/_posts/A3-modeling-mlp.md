@@ -12,7 +12,9 @@ mathjax: true
 
 对于本次作业，我们将继续 Modeling 任务，以帮助你更深入地理解 Transformer 的各个组成模块。本次将特别关注 Transformer 结构核心的关键层之一：**MLP** 层。
 
-# Task 1: Dense MLP
+# Task 1: Dense MLP with LoRA Adapters
+
+## Part 1: Dense MLP
 
 Multi-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复杂模式和非线性关系的任务。它已被广泛应用于基于 Transformer 的 LLMs 中，作为与 Attention 模块并列的核心组件。当前主流 LLM（如 Llama）中使用的 MLP 模块，基本上遵循 Gated Linear Units (GLU) 的结构风格（具体细节可参考 GLU 论文），具体形式如下：
 
@@ -27,7 +29,7 @@ $$
 - $\mathbf{W}_{\text{gate}}$ 表示门控投影矩阵，满足 $\mathbf{W}_{\text{gate}} \in \mathbb{R}^{\text{hidden\_size} \times \text{ffh}}$，类似传统的深度 RNN 架构，GLU 为了引入非线形变换而引入 $\mathbf{W}_{\text{gate}}$，配合激活函数 $\phi(·)$ 来形成门控项 $\phi(\mathbf{X} \times \mathbf{W}_{gate})$，其中 $\odot$ 表示逐元素乘（element-wise product），以此在前向传播中控制信息流动，在反向传播中缓解梯度消失问题。
 
 
-## TODO
+### TODO
 
 **完成 `src/modeling/mlp.py` 中的 `DenseMLPWithLoRA` 模块**，实现上述定义的 GLU-style MLP 模块，具体细节包括：
 - 对于 `DenseMLPWithLoRA` 模块，激活函数 $\phi(·)$ 是可配置的，通过传入名为 `activation_type` 的参数进行指定，该参数作为 `src/modeling/mlp.py` 中已定义枚举类 `MLPActivationType` 的一个实例。`activation_type` 与激活函数之间的映射关系，参考了参考文献中提供的 GLU Variants 论文以及部分 PyTorch 的实现方式。
@@ -48,7 +50,7 @@ $$
 {% endnote %}
 
 
-# Task 2: Dense MLP with LoRA Adapters
+## Part 2: Dense MLP with LoRA Adapters
 
 实际上，在大模型微调中，由于 MLP 模块中的参数通常占据了 LLMs 中超过 90% 的可训练参数，因此采用全量线性参数监督微调（supervised fine-tuning, SFT）的方式效率非常低，特别是在线性参数带来的增益（记作 $\Delta(\mathbf{W})$）高度稀疏的情况下。为了实现关于 LLMs 的参数高效微调（parameter-efficient fine-tuning, PEFT），提出了一种称为 Low-Rank Adaptation（LoRA） 的方法（具体细节见参考文献），该方法现已成为 PEFT 中最流行的策略之一。
 
@@ -70,7 +72,7 @@ $$
 
 通过这种方式，我们只需要在监督微调（SFT）过程中训练可学习的 $\mathbf{A}_r$ 和 $\mathbf{B}_r$，而冻结所有其他预训练的投影矩阵，从而实现参数高效的微调策略。
 
-## TODO
+### TODO
 
 在满足 Task1 的要求基础上，**进一步完善 `src/modeling/mlp.py` 中的 `DenseMLPWithLoRA` 模块**，实现上述定义的 GLU-style MLP with LoRA Adapters 模块，具体细节包括：
 - 无论是使用 `Xavier Initialization` 还是 `Kaiming Initialization`，$\mathbf{A}_{\text{r}}$ 和 $\mathbf{B}_\text{r}$ 都应从 **uniform 分布**中进行初始化。
@@ -97,7 +99,7 @@ $$
 3. 最后输出的 `hidden_states`，记为 O 应与 X 具有相同形状。
 
 
-# Task 3: Sparse MLP
+# Task 2: Sparse MLP
 
 在 Task 1，2 中实现的 `DenseMLPWithLoRA` 模块的基础上，我们将继续结合主流 Mixture-of-Experts (MoE) 架构实现 `SparseMLPWithLoRA` 模块（更多细节见参考文献）。首先，所谓 **Dense** 的 MLP 模块，通常是指一种标准结构：它先将 `hidden_states` $\mathbf{X}$ 从 `h` 维上投影（up-project）到更高的 `ffh` 维，再通过 `gating` 机制下投影（down-project）回原始维度。
 

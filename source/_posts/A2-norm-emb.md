@@ -9,7 +9,9 @@ categories:
 comments: false
 mathjax: true
 ---
-#### Task 1: 均方根层归一化 (RMS Norm)
+在本次实验中，我们将实现 *Transfomer* 中的两个关键模块：均方根层归一化（**RMSNorm**）和词嵌入（**Embedding**）层。**RMSNorm** 是一种高效的归一化方法，通过仅利用输入的均方根值进行归一化，在保持模型性能的前提下，提升了计算效率与训练稳定性。**Embedding** 层则广泛应用于自然语言处理任务，其主要作用是将离散的符号（如单词或子词）映射为稠密的向量表示，从而为模型提供可学习的语义基础。
+
+# Task 1: 均方根层归一化 (RMS Norm)
 
 均方根层归一化（RMS Norm）是深度学习中应用最广泛的归一化模块，尤其在自然语言处理（NLP）和大语言模型（LLM）领域。该模块以形状为 `[batch_size, seqlen, hidden_size]` 的张量为输入（记为 `X`，形状为 `[b, s, h]`），并沿着隐藏层 `h` 维度，执行带可学习缩放变换的均方根归一化操作，得到输出 `Y`，形状为 `[b, s, h]`。具体公式如下所示：
 $$
@@ -33,7 +35,7 @@ $$
 
 此外，我们还应该为该 *Group RMS Norm* 模块实现一个名为 `reset_parameters` 的参数初始化方法，用于为可学习的参数矩阵 $\gamma$ 设置初始值。我们会提供一个随机数种子（记为 `init_seed`，如42）和一个初始值范围元祖（记为 `init_range`，如 `(-1, 1)`），请使用均匀分布（**uniform distribution**）和 *pytorch* 自带的初始化方法为 *Parameter* 初始化。 
 
-##### TODO
+## TODO
 
 完成 `src/modeling/norm.py` 中的 `GroupRMSNorm` 模块，实现上述参数初始化和分组均方根归一化。首先，你需要根据 `init_range` 和 `init_seed` ，使用 **uniform distribution** 为 $\gamma$ 初始化，然后将 `X` 和 `gz` 作为输入，实现**Group RMSNorm**，并返回输出 `Y`，形状为 `[batch_size, seqlen, hidden_size]`。
 
@@ -53,13 +55,13 @@ $$
 
 {% endnote %}
 
-#### Task 2: 嵌入词表 (Vocab Embedding)
+# Task 2: 嵌入词表 (Vocab Embedding)
 
 在 **Task2** 中，我们将要实现一个嵌入词表，以获取之前任务中的输入 `X`。假设词表的大小为 `vocab_size`，简记为 `v`，嵌入词表模块以形状为 `[batch_size, seqlen]` 的张量 `I` 作为输入，张量 `I` 中存储了每个 token 的 ID，ID 的范围是 `[0, v-1]`。通过查询可学习的嵌入表（记为 `T`，形状为 `[v, e]`），为张量 `I` 中的每个 ID 分配对应的嵌入向量，并返回形状为 `[batch_size, seqlen, emb_size]` 的嵌入张量 `E`，简记为 `[b, s, e]`。
 
 与 **Task1** 类似，你还应该为 `VocabEmbedding` 模块类实现 `reset_parameters` 方法，用于嵌入表 `T` 的初始化。选用正态分布（**normal distribution**），给定平均值（表示为 `init_mean`，如 `0.`），标准差（表示为 `init_std`，如 `1.`），以及随机数种子（表示为 `init_seed`，如 `42`），对嵌入表 `T` 初始化，`reset_parameters` 方法同样需要在 `__init__` 中显示调用。
 
-##### TODO
+## TODO
 
 完成 `src/modeling/vocab_emb.py` 中的 `VocabEmbedding` 模块，实现上述嵌入词表。首先，你需要根据 `init_mean`, `init_std` 和 `init_seed`，使用 **normal distribution** 对嵌入表 `T` 初始化，然后将 `I` 作为输入，实现词表嵌入，并返回嵌入张量 `E`。
 
@@ -72,7 +74,7 @@ $$
 
 {% endnote %}
 
-#### Task 3: 分布式并行嵌入词表 (Parallel Vocab Embedding)
+# Task 3: 分布式并行嵌入词表 (Parallel Vocab Embedding)
 
 在 **Task3** 中，我们将在 **Task2** 实现的嵌入词表的基础上，实现分布式的嵌入词表。随着 **LLM** 规模迅速扩大，词表的大小已经增长到 `128K+`，嵌入词表很难在一块 **GPU**上存储和计算。
 
@@ -93,7 +95,7 @@ $$
 
 与 **Task2** 类似，你还应该为 `ParallelVocabEmbedding` 模块类实现 `reset_parameters` 方法，用于嵌入表 `Tr` 的初始化。不同的是，此时参数中的随机数种子是基础随机数种子，记为 `init_base_seed`，而真正的随机数种子应为 `init_base_seed + r`，以避免对所有的参数矩阵进行相同的初始化。
 
-##### TODO
+## TODO
 
 完成 `src/modeling/vocab_emb.py` 中的 `ParallelVocabEmbedding` 模块，实现上述嵌入词表。首先，你需要根据 `init_mean`, `init_std` 和 `init_base_seed`，使用 **normal distribution** 对嵌入表 `Tr` 初始化，然后将 `I` 作为输入，实现词表嵌入，并返回不完整的嵌入张量 `Er`。
 
@@ -107,7 +109,7 @@ $$
 
 {% endnote %}
 
-#### [Optional] Task4：旋转位置编码
+# [Optional] Task4：旋转位置编码
 
 Transformer 模型将输入的词元（token）视为一个“词袋”并并行处理，因而本身不具备对序列顺序的感知能力。为保留输入中的序列信息，最初版本的 Transformer 引入了一种新颖的正弦位置编码（Sinusoidal Positional Encoding，简称 SinPE），其定义如下面公式所示：
 $$
@@ -299,7 +301,7 @@ $$
   1. 当出现新的输入长度 `s' > es` 时，我们选择满足 `es' = ms x k' >= s'` 的最小 `k'`，其中 `k'` 是一个偶数；
   2. 我们在初始化 `NTKAwareRoPE` 模块时新增了一个参数 `dynamic`。当 `dynamic = True` 时，每次遇到超出长度的输入时，都会更新当前的 $k \leftarrow k'$ 以及 $(C,S) \leftarrow (C', S')$；反之，若 `dynamic = False` 时，则仅为当前超长输入临时计算并使用 $(C',S')$，而全局的 $k$ 和 $(C,S)$ 保持不变。 
 
-##### TODO
+## TODO
 
 完成 `NTKAwareRoPe` 模块。该模块首先根据参数 `hd` , `ms`, `base`, `k` 初始化原始的位置编码参数对 `(C, S)`。接着，模块接收形状为`[b, s, nh, hd]`的输入张量`X`，并按以下逻辑处理：当序列长度 `s` 小于等于预设最大长度 `es` 时，直接调取缓存的 `(C, S)` 参数；若`s > es`，则重新计算出新的参数 `k_` ，并重新计算新的参数对 `(C_, S_)`。特别地，当参数 `dynamic` 设为 True 时，模块会在重新计算后同步更新内部存储的 `k` 值及 `(C, S)` 参数。最后，模块将通过调用需自行实现的 `apply_rotary_pos_emb` 函数，将对应位置的 `(C, S)` 参数应用于输入张量 `X` ，完成旋转位置编码操作并返回编码结果 `E` 。
 
@@ -311,3 +313,32 @@ $$
 4. 您可以参考 Llama 和 ChatGLM 等模型实现旋转位置编码（RoPE）的方式，但请特别注意上述要求，这些要求与 Llama 和 ChatGLM 的实现细节存在差异。
 
 {% endnote %}
+
+# References
+
+*提示：以下是一些可能对你的任务有帮助的参考资料，或者可以加深/拓展你对深度学习中归一化层，词表嵌入层和位置编码的理解：*
+
+**!! 请记住：查阅论文、源码以及官方文档，并从中进行思考和学习，是一项基本且至关重要的能力。请尽量不要过度依赖一些带有偏见或内容浅显的博客，例如 CSDN !!**
+
+* [RMSNorm Paper](https://arxiv.org/abs/1910.07467)
+* [Pytorch RMSNorm Module](https://pytorch.org/docs/stable/generated/torch.nn.RMSNorm.html#rmsnorm)
+* [Llama RMSNorm Module](https://github.com/huggingface/transformers/blob/v4.46.3/src/transformers/models/llama/modeling_llama.py#L60)
+* [ChatGLM RMSNorm Module](https://huggingface.co/THUDM/chatglm3-6b/blob/main/modeling_chatglm.py#L181)
+* [Pytorch LayerNorm Module](https://pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html#torch.nn.LayerNorm)
+* [Pytorch BatchNorm Module](https://pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html#torch.nn.BatchNorm1d)
+* [Pytorch GroupNorm Module](https://pytorch.org/docs/stable/generated/torch.nn.GroupNorm.html#torch.nn.GroupNorm)
+* [Pytorch Uniform Initialization](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.uniform_)
+
+* [Pytorch Embedding Module](https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html)
+* [Pytorch Embedding Functional](https://pytorch.org/docs/stable/generated/torch.nn.functional.embedding.html)
+* [ChatGLM Vocab Embedding Module](https://huggingface.co/THUDM/chatglm3-6b/blob/main/modeling_chatglm.py#L706)
+* [Megatron Vovab Parallel Embedding Module](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/core/tensor_parallel/layers.py#L156)
+* [Pytorch Normal Initialization](https://pytorch.org/docs/stable/nn.init.html#torch.nn.init.normal_)
+
+* `SinPE`: [paper](https://arxiv.org/abs/1706.03762) | [blog](https://spaces.ac.cn/archives/8231)
+* `RoPE`: [paper](https://arxiv.org/abs/2104.09864) | [blog](https://spaces.ac.cn/archives/8265)
+* `Length Extrapolation`: [Alibi](https://arxiv.org/abs/2108.12409) | [PI](https://arxiv.org/abs/2306.15595)
+* `NTK-aware RoPE`: [blog](https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows_llama_models_to_have/) | [paper](https://arxiv.org/abs/2309.00071) | [survey](https://arxiv.org/abs/2311.12351)
+* `Llama RoPE`:  [module](https://github.com/huggingface/transformers/blob/v4.36.2/src/transformers/models/llama/modeling_llama.py#L178) | [function](https://github.com/huggingface/transformers/blob/v4.36.2/src/transformers/models/llama/modeling_llama.py#L211)
+* `ChatGLM RoPE`: [module](https://huggingface.co/THUDM/chatglm3-6b/blob/main/modeling_chatglm.py#L121) | [function](https://huggingface.co/THUDM/chatglm3-6b/blob/main/modeling_chatglm.py#L121)
+* `Pytorch Module Register`: [buffer](https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.register_buffer) | [parameter](https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.register_parameter)
