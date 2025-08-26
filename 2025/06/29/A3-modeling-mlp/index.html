@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"big-trex.github.io","root":"/LLM-Blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="对于本次作业，我们将继续 Modeling 任务，以帮助你更深入地理解 Transformer 的各个组成模块。本次将特别关注 Transformer 结构核心的关键层之一：MLP 层。 Task 1: Dense MLPMulti-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复杂模式和非线性关系的任务。它已被广泛应用于基于 Transformer">
+  <meta name="description" content="对于本次作业，我们将继续 Modeling 任务，以帮助你更深入地理解 Transformer 的各个组成模块。本次将特别关注 Transformer 结构核心的关键层之一：MLP 层。 Task 1: Dense MLP with LoRA AdaptersPart 1: Dense MLPMulti-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复">
 <meta property="og:type" content="article">
 <meta property="og:title" content="A3 Modeling MLP">
 <meta property="og:url" content="https://big-trex.github.io/2025/06/29/A3-modeling-mlp/index.html">
 <meta property="og:site_name" content="LLM-Assignment-Doc">
-<meta property="og:description" content="对于本次作业，我们将继续 Modeling 任务，以帮助你更深入地理解 Transformer 的各个组成模块。本次将特别关注 Transformer 结构核心的关键层之一：MLP 层。 Task 1: Dense MLPMulti-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复杂模式和非线性关系的任务。它已被广泛应用于基于 Transformer">
+<meta property="og:description" content="对于本次作业，我们将继续 Modeling 任务，以帮助你更深入地理解 Transformer 的各个组成模块。本次将特别关注 Transformer 结构核心的关键层之一：MLP 层。 Task 1: Dense MLP with LoRA AdaptersPart 1: Dense MLPMulti-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-06-29T13:54:26.000Z">
-<meta property="article:modified_time" content="2025-07-25T08:17:10.554Z">
+<meta property="article:modified_time" content="2025-08-08T03:39:52.802Z">
 <meta property="article:author" content="DeepEngine">
 <meta property="article:tag" content="MLP">
 <meta property="article:tag" content="LoRA">
@@ -187,7 +187,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-25 16:17:10" itemprop="dateModified" datetime="2025-07-25T16:17:10+08:00">2025-07-25</time>
+                <time title="修改时间：2025-08-08 11:39:52" itemprop="dateModified" datetime="2025-08-08T11:39:52+08:00">2025-08-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -211,7 +211,7 @@
 
       
         <p>对于本次作业，我们将继续 Modeling 任务，以帮助你更深入地理解 Transformer 的各个组成模块。本次将特别关注 Transformer 结构核心的关键层之一：<strong>MLP</strong> 层。</p>
-<h1 id="Task-1-Dense-MLP"><a href="#Task-1-Dense-MLP" class="headerlink" title="Task 1: Dense MLP"></a>Task 1: Dense MLP</h1><p>Multi-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复杂模式和非线性关系的任务。它已被广泛应用于基于 Transformer 的 LLMs 中，作为与 Attention 模块并列的核心组件。当前主流 LLM（如 Llama）中使用的 MLP 模块，基本上遵循 Gated Linear Units (GLU) 的结构风格（具体细节可参考 GLU 论文），具体形式如下：</p>
+<h1 id="Task-1-Dense-MLP-with-LoRA-Adapters"><a href="#Task-1-Dense-MLP-with-LoRA-Adapters" class="headerlink" title="Task 1: Dense MLP with LoRA Adapters"></a>Task 1: Dense MLP with LoRA Adapters</h1><h2 id="Part-1-Dense-MLP"><a href="#Part-1-Dense-MLP" class="headerlink" title="Part 1: Dense MLP"></a>Part 1: Dense MLP</h2><p>Multi-Layer Perceptron (MLP) 模块是深度学习中的一个基本模块，特别适用于处理复杂模式和非线性关系的任务。它已被广泛应用于基于 Transformer 的 LLMs 中，作为与 Attention 模块并列的核心组件。当前主流 LLM（如 Llama）中使用的 MLP 模块，基本上遵循 Gated Linear Units (GLU) 的结构风格（具体细节可参考 GLU 论文），具体形式如下：</p>
 <script type="math/tex; mode=display">
 \text{MLP}(\mathbf{X}) = (\phi(\mathbf{X} \times \mathbf{W}_{gate}) \odot (\mathbf{X} \times \mathbf{W}_{up})) \times \mathbf{W}_{down}</script><p>其中：</p>
 <ul>
@@ -220,7 +220,7 @@
 <li>$\mathbf{W}_{\text{down}}$ 表示下投影矩阵，满足 $\mathbf{W}_{\text{down}} \in \mathbb{R}^{\text{ffh} \times \text{hidden_size}}$，用于将 $\mathbf{X}$ 从 <code>ffh</code> 维映射回 <code>h</code> 维，记为 <code>[ffh, d]</code>。</li>
 <li>$\mathbf{W}_{\text{gate}}$ 表示门控投影矩阵，满足 $\mathbf{W}_{\text{gate}} \in \mathbb{R}^{\text{hidden_size} \times \text{ffh}}$，类似传统的深度 RNN 架构，GLU 为了引入非线形变换而引入 $\mathbf{W}_{\text{gate}}$，配合激活函数 $\phi(·)$ 来形成门控项 $\phi(\mathbf{X} \times \mathbf{W}_{gate})$，其中 $\odot$ 表示逐元素乘（element-wise product），以此在前向传播中控制信息流动，在反向传播中缓解梯度消失问题。</li>
 </ul>
-<h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2><p><strong>完成 <code>src/modeling/mlp.py</code> 中的 <code>DenseMLPWithLoRA</code> 模块</strong>，实现上述定义的 GLU-style MLP 模块，具体细节包括：</p>
+<h3 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h3><p><strong>完成 <code>src/modeling/mlp.py</code> 中的 <code>DenseMLPWithLoRA</code> 模块</strong>，实现上述定义的 GLU-style MLP 模块，具体细节包括：</p>
 <ul>
 <li>对于 <code>DenseMLPWithLoRA</code> 模块，激活函数 $\phi(·)$ 是可配置的，通过传入名为 <code>activation_type</code> 的参数进行指定，该参数作为 <code>src/modeling/mlp.py</code> 中已定义枚举类 <code>MLPActivationType</code> 的一个实例。<code>activation_type</code> 与激活函数之间的映射关系，参考了参考文献中提供的 GLU Variants 论文以及部分 PyTorch 的实现方式。</li>
 <li>同样，作为一个可学习的模块，你需要为 <code>DenseMLPWithLoRA</code> 模块实现 <code>reset_parameters</code> 方法，用于对三个投影矩阵进行初始化，初始化方式为从<strong>正态分布</strong>中采样。但与之前的 <code>Norm</code> 层和 <code>Embedding</code> 层不同，对于投影矩阵的初始化，我们通常采用 <code>Xavier Initialization</code> 或 <code>Kaiming Initialization</code>（具体细节可参考参考文献）:<ul>
@@ -239,7 +239,7 @@
 <div class="note warning">
             <ol><li>我们省略了所有线性投影中的偏置项（bias）。</li><li>参数中的 <code>dtype</code> 和 <code>device</code> 是针对可学习参数的设置，可能与输入 $\mathbf{X}$ 的 <code>dtype</code> 和 <code>device</code> 不同，即不强制匹配，允许你控制这些行为，这样设计更灵活。</li><li>输出 O 的属性（包括 <code>dtype</code> 和 <code>device</code>）必须与输入 $\mathbf{X}$ 保持一致。</li><li><code>reset_parameters</code> 方法应该在 <code>__init__</code> 方法中自动调用一次，用于初始化所有参数。</li></ol>
           </div>
-<h1 id="Task-2-Dense-MLP-with-LoRA-Adapters"><a href="#Task-2-Dense-MLP-with-LoRA-Adapters" class="headerlink" title="Task 2: Dense MLP with LoRA Adapters"></a>Task 2: Dense MLP with LoRA Adapters</h1><p>实际上，在大模型微调中，由于 MLP 模块中的参数通常占据了 LLMs 中超过 90% 的可训练参数，因此采用全量线性参数监督微调（supervised fine-tuning, SFT）的方式效率非常低，特别是在线性参数带来的增益（记作 $\Delta(\mathbf{W})$）高度稀疏的情况下。为了实现关于 LLMs 的参数高效微调（parameter-efficient fine-tuning, PEFT），提出了一种称为 Low-Rank Adaptation（LoRA） 的方法（具体细节见参考文献），该方法现已成为 PEFT 中最流行的策略之一。</p>
+<h2 id="Part-2-Dense-MLP-with-LoRA-Adapters"><a href="#Part-2-Dense-MLP-with-LoRA-Adapters" class="headerlink" title="Part 2: Dense MLP with LoRA Adapters"></a>Part 2: Dense MLP with LoRA Adapters</h2><p>实际上，在大模型微调中，由于 MLP 模块中的参数通常占据了 LLMs 中超过 90% 的可训练参数，因此采用全量线性参数监督微调（supervised fine-tuning, SFT）的方式效率非常低，特别是在线性参数带来的增益（记作 $\Delta(\mathbf{W})$）高度稀疏的情况下。为了实现关于 LLMs 的参数高效微调（parameter-efficient fine-tuning, PEFT），提出了一种称为 Low-Rank Adaptation（LoRA） 的方法（具体细节见参考文献），该方法现已成为 PEFT 中最流行的策略之一。</p>
 <p>LoRA 的核心基本假设是：<strong>$\Delta(\mathbf{W})$ 是一个低秩且稀疏的矩阵</strong>，其可以通过低秩分解表示为：</p>
 <script type="math/tex; mode=display">
 \Delta(\mathbf{W}) = \frac{\alpha}{r} \mathbf{A}_{\text{r}} \times \mathbf{B}_\text{r}</script><p>其中：</p>
@@ -250,7 +250,7 @@
 <p>基于以上内容，带 LoRA adapters 的 MLP 模块的计算可以分解为如下公式，其中引入了标准的 <code>Dropout</code> 层（dropout rate 为 $p$）来进一步增强 $\Delta(\mathbf{W})$ 的稀疏性：</p>
 <script type="math/tex; mode=display">
 \text{MLP}_{\text{LoRA}}(\mathbf{X}) = \text{MLP}(\mathbf{X}) + \text{Dropout}_p(\mathbf{X} \times \Delta(\mathbf{W})) = \text{MLP}(\mathbf{X}) + \text{Dropout}_p(\frac{\alpha}{r}\mathbf{X} \times \mathbf{A}_{\text{r}} \times \mathbf{B}_\text{r})</script><p>通过这种方式，我们只需要在监督微调（SFT）过程中训练可学习的 $\mathbf{A}_r$ 和 $\mathbf{B}_r$，而冻结所有其他预训练的投影矩阵，从而实现参数高效的微调策略。</p>
-<h2 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h2><p>在满足 Task1 的要求基础上，<strong>进一步完善 <code>src/modeling/mlp.py</code> 中的 <code>DenseMLPWithLoRA</code> 模块</strong>，实现上述定义的 GLU-style MLP with LoRA Adapters 模块，具体细节包括：</p>
+<h3 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h3><p>在满足 Task1 的要求基础上，<strong>进一步完善 <code>src/modeling/mlp.py</code> 中的 <code>DenseMLPWithLoRA</code> 模块</strong>，实现上述定义的 GLU-style MLP with LoRA Adapters 模块，具体细节包括：</p>
 <ul>
 <li>无论是使用 <code>Xavier Initialization</code> 还是 <code>Kaiming Initialization</code>，$\mathbf{A}_{\text{r}}$ 和 $\mathbf{B}_\text{r}$ 都应从 <strong>uniform 分布</strong>中进行初始化。</li>
 <li>我们额外提供了一个 <code>lora_init_base_seed</code> 参数，用于控制 LoRA 相关参数矩阵的初始化，具体而言：<ul>
@@ -273,7 +273,7 @@
 <li>接收输入 X，执行 GLU-style MLP with LoRA adapters 的 forward 计算过程，其中激活函数由 <code>activation_type</code> 指定；</li>
 <li>最后输出的 <code>hidden_states</code>，记为 O 应与 X 具有相同形状。</li>
 </ol>
-<h1 id="Task-3-Sparse-MLP"><a href="#Task-3-Sparse-MLP" class="headerlink" title="Task 3: Sparse MLP"></a>Task 3: Sparse MLP</h1><p>在 Task 1，2 中实现的 <code>DenseMLPWithLoRA</code> 模块的基础上，我们将继续结合主流 Mixture-of-Experts (MoE) 架构实现 <code>SparseMLPWithLoRA</code> 模块（更多细节见参考文献）。首先，所谓 <strong>Dense</strong> 的 MLP 模块，通常是指一种标准结构：它先将 <code>hidden_states</code> $\mathbf{X}$ 从 <code>h</code> 维上投影（up-project）到更高的 <code>ffh</code> 维，再通过 <code>gating</code> 机制下投影（down-project）回原始维度。</p>
+<h1 id="Task-2-Sparse-MLP"><a href="#Task-2-Sparse-MLP" class="headerlink" title="Task 2: Sparse MLP"></a>Task 2: Sparse MLP</h1><p>在 Task 1，2 中实现的 <code>DenseMLPWithLoRA</code> 模块的基础上，我们将继续结合主流 Mixture-of-Experts (MoE) 架构实现 <code>SparseMLPWithLoRA</code> 模块（更多细节见参考文献）。首先，所谓 <strong>Dense</strong> 的 MLP 模块，通常是指一种标准结构：它先将 <code>hidden_states</code> $\mathbf{X}$ 从 <code>h</code> 维上投影（up-project）到更高的 <code>ffh</code> 维，再通过 <code>gating</code> 机制下投影（down-project）回原始维度。</p>
 <p>对于 <strong>Sparse</strong> 的 MLP 模块，类似于 attention 模块中的 multi-head 机制，将投影矩阵的 <code>ffh</code> 维度划分为 <code>ne</code> 个大小相等的 <code>shard</code>（分片），每个 <code>shard</code> 的大小为 <code>e = ffh // ne</code>，对应一个“专家”（expert）$E_i$，其中 $i \in [0, …, \text{ne}−1]$（<code>ne</code> 表示专家的数量）。因此，与传统使用大维度 <code>ffh</code> 的 Dense 投影不同，<code>SparseMLPWithLoRA</code> 模块中，<code>hidden_states</code> $\mathbf{X}$ 中的每个 <code>token</code> 仅通过一个 <strong>routing mechanism</strong> 映射到 <code>k</code> 个特定的 experts，每个 expert 仅负责处理一个特定的 <code>e</code> 维子空间（在本模块中，你可以简单地<strong>将每个 expert 建模为一个小型的 DenseMLPWithLoRA 模块</strong>，其中 <code>ffh_size</code> 参数设置为 <code>e</code>）。最终，每个 <code>token</code> 的最终输出是来自这 <code>k</code> 个 experts 子输出的加权和。通过这种方式，我们可以同时实现两个目标：</p>
 <ul>
 <li>降低高维计算开销；</li>
@@ -424,7 +424,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Dense-MLP"><span class="nav-number">1.</span> <span class="nav-text">Task 1: Dense MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-2-Dense-MLP-with-LoRA-Adapters"><span class="nav-number">2.</span> <span class="nav-text">Task 2: Dense MLP with LoRA Adapters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-1"><span class="nav-number">2.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dense-MLP-%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">Dense MLP 小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-3-Sparse-MLP"><span class="nav-number">4.</span> <span class="nav-text">Task 3: Sparse MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-2"><span class="nav-number">4.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sparse-MLP-%E5%B0%8F%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">Sparse MLP 小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">6.</span> <span class="nav-text">References</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Dense-MLP-with-LoRA-Adapters"><span class="nav-number">1.</span> <span class="nav-text">Task 1: Dense MLP with LoRA Adapters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-1-Dense-MLP"><span class="nav-number">1.1.</span> <span class="nav-text">Part 1: Dense MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-2-Dense-MLP-with-LoRA-Adapters"><span class="nav-number">1.2.</span> <span class="nav-text">Part 2: Dense MLP with LoRA Adapters</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TODO-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">TODO</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dense-MLP-%E5%B0%8F%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">Dense MLP 小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-2-Sparse-MLP"><span class="nav-number">3.</span> <span class="nav-text">Task 2: Sparse MLP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-2"><span class="nav-number">3.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sparse-MLP-%E5%B0%8F%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">Sparse MLP 小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -449,7 +449,7 @@
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>

@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"big-trex.github.io","root":"/LLM-Blog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Task 1: MalMul with multi-head variant在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：  A1：一个 3D 的输入张量，形状为 [batch_size, seq_len, hidden_size]，batch_size 表示序列的数量，seqlen 表示一个序列的最大长度，hidden_size 表示序列中每一个 token 拥有的维度">
+  <meta name="description" content="在本次实验中，我们将实现深度学习模型中非常核心且基础的运算模块——矩阵乘（Matrix Multiplication）。矩阵乘法不仅是构建神经网络中全连接层、卷积操作和注意力机制等模块的基础，同时也是高性能计算优化的重要对象。 Task 1: MalMul with multi-head variant在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：  A1：一个 3D 的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="A1 matmul">
+<meta property="og:title" content="A1 Matmul">
 <meta property="og:url" content="https://big-trex.github.io/2025/06/14/A1-matmul/index.html">
 <meta property="og:site_name" content="LLM-Assignment-Doc">
-<meta property="og:description" content="Task 1: MalMul with multi-head variant在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：  A1：一个 3D 的输入张量，形状为 [batch_size, seq_len, hidden_size]，batch_size 表示序列的数量，seqlen 表示一个序列的最大长度，hidden_size 表示序列中每一个 token 拥有的维度">
+<meta property="og:description" content="在本次实验中，我们将实现深度学习模型中非常核心且基础的运算模块——矩阵乘（Matrix Multiplication）。矩阵乘法不仅是构建神经网络中全连接层、卷积操作和注意力机制等模块的基础，同时也是高性能计算优化的重要对象。 Task 1: MalMul with multi-head variant在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：  A1：一个 3D 的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-06-14T04:57:11.000Z">
-<meta property="article:modified_time" content="2025-06-14T08:51:18.936Z">
+<meta property="article:modified_time" content="2025-08-26T09:11:57.655Z">
 <meta property="article:author" content="DeepEngine">
 <meta property="article:tag" content="Mutmal">
 <meta property="article:tag" content="Multi-head">
@@ -47,7 +47,7 @@
   };
 </script>
 
-  <title>A1 matmul | LLM-Assignment-Doc</title>
+  <title>A1 Matmul | LLM-Assignment-Doc</title>
   
 
 
@@ -170,7 +170,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          A1 matmul
+          A1 Matmul
         </h1>
 
         <div class="post-meta">
@@ -179,10 +179,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-06-14 12:57:11 / 修改时间：16:51:18" itemprop="dateCreated datePublished" datetime="2025-06-14T12:57:11+08:00">2025-06-14</time>
+              <time title="创建时间：2025-06-14 12:57:11" itemprop="dateCreated datePublished" datetime="2025-06-14T12:57:11+08:00">2025-06-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-08-26 17:11:57" itemprop="dateModified" datetime="2025-08-26T17:11:57+08:00">2025-08-26</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -204,39 +210,47 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h4 id="Task-1-MalMul-with-multi-head-variant"><a href="#Task-1-MalMul-with-multi-head-variant" class="headerlink" title="Task 1: MalMul with multi-head variant"></a>Task 1: MalMul with multi-head variant</h4><p>在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：</p>
+        <p>在本次实验中，我们将实现深度学习模型中非常核心且基础的运算模块——矩阵乘（Matrix Multiplication）。矩阵乘法不仅是构建神经网络中全连接层、卷积操作和注意力机制等模块的基础，同时也是高性能计算优化的重要对象。</p>
+<h1 id="Task-1-MalMul-with-multi-head-variant"><a href="#Task-1-MalMul-with-multi-head-variant" class="headerlink" title="Task 1: MalMul with multi-head variant"></a>Task 1: MalMul with multi-head variant</h1><p>在 task 1 中，我们要实现两个矩阵相乘的逻辑，我们有以下两个矩阵：</p>
 <ul>
 <li><code>A1</code>：一个 3D 的输入张量，形状为 <code>[batch_size, seq_len, hidden_size]</code>，<code>batch_size</code> 表示序列的数量，<code>seqlen</code> 表示一个序列的最大长度，<code>hidden_size</code> 表示序列中每一个 <code>token</code> 拥有的维度。我们简写 <code>A1</code> 的形状为 <code>[b, s, h]</code>。</li>
 <li><code>W1</code>：一个 2D 的权重张量，形状为 <code>[hidden_size, embed_size]</code>，它表示一个投影矩阵，将任何行向量从 <code>hidden_size</code>-dim 投影到 <code>embed_size</code>-dim。我们简写 <code>W1</code> 的形状为 <code>[h, e]</code>。</li>
 </ul>
 <p>朴素的矩阵乘法仅对 <code>A1</code> 中 <code>batch_size</code> 维度，针对每个序列索引i，都执行 <code>O1[i] = A1[i] @ W1</code> 计算，从而得到形状为 <code>[b, s, e]</code> 的张量 <code>O1</code>。</p>
 <p>在多头矩阵乘法中，我们首先将输入张量 <code>A1</code> 和权重张量 <code>W1</code> 的 <code>h</code> 维度均分为 <code>num_heads</code> 个子维度（记为 <code>nh</code>，表示头的数量），由此得到形状为 <code>[b, s, nh, hd]</code> 的四维张量 <code>A2</code> 和形状为 <code>[nh, hd, e]</code> 的三维张量 <code>W2</code>。接下来，对于 <code>A2</code> 中 <code>batch_size</code> 维度下的每个序列，遍历其 <code>num_heads</code> 维度上的每个 <code>[s, hd]</code> 矩阵，并将其与 W2 中 <code>num_heads</code> 维度下对应的 <code>[hd, e]</code> 矩阵进行乘法运算。通过多头并行计算，最终输出一个形状为 <code>[b, s, nh, e]</code> 的四维张量 <code>O2</code>。</p>
-<h5 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task1</strong> 的部分，实现上述多头矩阵乘法的逻辑，输入张量 <code>A1</code> 和 <code>W1</code>，返回计算值 <code>O2</code>。</p>
+<h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2><p>完成 <code>src/functional.py</code> 中的 <code>matmul_with_multi_head</code> 函数 ，实现上述多头矩阵乘法的逻辑，输入张量 <code>A1</code> 和 <code>W1</code>，返回计算值 <code>O2</code>。</p>
 <div class="note info">
-            <ol><li>输入的张量是 A1 和 W1，你需要自己将其转换为 A2 和 W2 再进行计算，请注意 torch 中 <code>reshape</code>, <code>view</code>, <code>transpose</code>, <code>permute</code>等函数的用法和区别。</li><li>虽然逻辑上矩阵的乘法是用遍历进行计算的，但请勿使用 for 循环的方式进行实现，请自行查阅 pytorch 的计算函数，如 <code>@</code>, <code>torch.bmm</code> , <code>torch.mm</code> , <code>torch.matmul</code> , <code>torch.einsum</code> 等。</li></ol>
+            <ol><li>输入的张量是 A1 和 W1，你需要自己将其转换为 A2 和 W2 再进行计算，请注意 torch 中 <code>reshape</code>, <code>view</code>, <code>transpose</code>, <code>permute</code>等函数的用法和区别。</li><li>虽然逻辑上矩阵的乘法是用遍历进行计算的，但请勿使用 for 循环的方式进行实现，请自行查阅 pytorch 的计算函数，如 <code>@</code>, <code>torch.bmm</code> , <code>torch.mm</code> , <code>torch.matmul</code> , <code>torch.einsum</code> 等。</li><li>了解并使用 pytorch 计算中的广播机制，有助于简化计算逻辑。</li></ol>
           </div>
 <div class="note warning">
             <ol><li>所有输入张量均在同一设备（CPU 或 CUDA）上从标准正态分布 N (0, 1) 随机初始化，具有相同的数据类型（float32、float16 或 bfloat16），并且在所有测试用例中均未设置 <code>require_grad</code>；</li><li>在所有测试用例中，<code>hidden_size</code> 均会被保证能被 <code>num_heads</code> 整除。</li></ol>
           </div>
-<h4 id="Task-2-MalMul-with-importance"><a href="#Task-2-MalMul-with-importance" class="headerlink" title="Task 2: MalMul with importance"></a>Task 2: MalMul with importance</h4><p>在多头矩阵乘法的基础上，我们引入一个表示“重要性”的概率张量 <code>P</code>，其形状为 <code>[b, s]</code>。P 中的每个元素表示 <code>A1</code> 中对应位置的元素的重要程度。基于这个重要性概率，我们的目标是只对每个序列中的 “重要” 元素执行矩阵乘法运算。这些重要元素总共有<code>total_important_seq_len</code> 个，简记为 <code>t</code>，其计算结果会被收集到输出张量 <code>O3</code> 中，其形状为 <code>[t, nh, e]</code>。</p>
+<h1 id="Task-2-MalMul-with-importance"><a href="#Task-2-MalMul-with-importance" class="headerlink" title="Task 2: MalMul with importance"></a>Task 2: MalMul with importance</h1><p>在多头矩阵乘法的基础上，我们引入一个表示“重要性”的概率张量 <code>P</code>，其形状为 <code>[b, s]</code>。P 中的每个元素表示 <code>A1</code> 中对应位置的元素的重要程度。基于这个重要性概率，我们的目标是只对每个序列中的 “重要” 元素执行矩阵乘法运算。这些重要元素总共有<code>total_important_seq_len</code> 个，简记为 <code>t</code>，其计算结果会被收集到输出张量 <code>O3</code> 中，其形状为 <code>[t, nh, e]</code>。</p>
 <p>为了精确界定 “重要” 元素的范围，我们提供两个可选参数：</p>
 <ol>
 <li><code>top_p</code>：取值范围为 <code>[0., 1.]</code> 的浮点数。只有概率值大于或等于 <code>top_p</code> 的元素才被视为 “重要” 元素，默认值为 <code>1.0</code>。</li>
 <li><code>top_k</code>：取值范围为 <code>[1, ..., seq_len]</code> 的整数。对于批次中的每个序列，只将概率最高的 <code>top_k</code> 个元素视为 “重要” 元素。如果未设置 <code>top_k</code>（默认值为 <code>None</code>），则等价于 <code>top_k = seq_len</code>。</li>
 </ol>
 <p>注意，必须同时满足上述两点的元素才是重要元素。</p>
-<h5 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task2</strong> 的部分，实现上述重要性乘法。首先，你需要根据 <code>top_p</code> 和 <code>top_k</code> 的值，从 <code>A1</code> 中挑选出“重要”的元素，组成 <code>[t, h]</code> 的张量 <code>A3</code>，再仿造 <strong>Task1</strong> 中的多头矩阵乘法，输出 <code>[t, nh, e]</code> 的张量 <code>O3</code>。</p>
+<h2 id="TODO-1"><a href="#TODO-1" class="headerlink" title="TODO"></a>TODO</h2><p>完成 <code>src/functional.py</code> 中 <code>matmul_with_importance</code> 函数 <strong>Task2</strong> 的部分，实现上述重要性乘法。首先，你需要根据 <code>top_p</code> 和 <code>top_k</code> 的值，从 <code>A1</code> 中挑选出“重要”的元素，组成 <code>[t, h]</code> 的张量 <code>A3</code>，再仿造 <strong>Task1</strong> 中的多头矩阵乘法，输出 <code>[t, nh, e]</code> 的张量 <code>O3</code>。</p>
 <div class="note info">
             <p>可以使用 <code>torch.topk</code> 计算 <code>topk</code> 个重要元素。</p>
           </div>
 <div class="note warning">
             <p>在所有测试用例中，<code>top_p</code> 和 <code>top_k</code> 参数均会被保证在各自有效范围内取值。</p>
           </div>
-<h4 id="Task-3-MalMul-with-grad"><a href="#Task-3-MalMul-with-grad" class="headerlink" title="Task 3: MalMul with grad"></a>Task 3: MalMul with grad</h4><p>此外，如果提供了输出张量的可选梯度（记为 <code>dO3</code>，其形状与 <code>O3</code> 相同），我们还需要计算输入张量的梯度（记为 <code>dA1</code>，形状与 <code>A1</code> 相同）和权重张量的梯度（记为 <code>dW1</code>，形状与 <code>W1</code> 相同）。若未提供 <code>dO3</code>，则 <code>dA1</code> 和 <code>dW1</code> 均返回 <code>None</code>。</p>
-<h5 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h5><p>完成 <code>matmul_with_importance</code> 中 <strong>Task3</strong> 的部分，请参考 <strong>A0</strong> 中介绍的两种求梯度的方式，返回 <code>A1</code> 和 <code>W1</code> 的梯度。</p>
+<h1 id="Task-3-MalMul-with-grad"><a href="#Task-3-MalMul-with-grad" class="headerlink" title="Task 3: MalMul with grad"></a>Task 3: MalMul with grad</h1><p>此外，如果提供了输出张量的可选梯度（记为 <code>dO3</code>，其形状与 <code>O3</code> 相同），我们还需要计算输入张量的梯度（记为 <code>dA1</code>，形状与 <code>A1</code> 相同）和权重张量的梯度（记为 <code>dW1</code>，形状与 <code>W1</code> 相同）。若未提供 <code>dO3</code>，则 <code>dA1</code> 和 <code>dW1</code> 均返回 <code>None</code>。</p>
+<h2 id="TODO-2"><a href="#TODO-2" class="headerlink" title="TODO"></a>TODO</h2><p>完成 <code>src/functional.py/matmul_with_importance</code> 中 <strong>Task3</strong> 的部分，请参考 <strong>A0</strong> 中介绍的两种求梯度的方式，返回 <code>A1</code> 和 <code>W1</code> 的梯度。</p>
 <div class="note info">
             <ol><li>若未提供 <code>grad_output</code> 参数，应避免计算梯度以提高效率并节省内存。</li><li>若提供了 <code>grad_output</code> 参数，可使用 PyTorch 的自动求导机制计算梯度，但需注意潜在的副作用，这些副作用可能会在测试中被测试。</li></ol>
           </div>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><em>提示：以下是一些可能对你的任务有帮助的参考资料，或者可以加深/拓展你对 PyTorch 的理解：</em></p>
+<p><strong>!! 请记住：查阅论文、源码以及官方文档，并从中进行思考和学习，是一项基本且至关重要的能力。请尽量不要过度依赖一些带有偏见或内容浅显的博客，例如 CSDN !!</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/index.html">Pytorch Documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/autograd.html#module-torch.autograd">Pytorch Autograd Mechanism</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.ezyang.com/2019/05/pytorch-internals/">PyTorch Internals</a></li>
+</ul>
 
     </div>
 
@@ -321,7 +335,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-1-MalMul-with-multi-head-variant"><span class="nav-number">1.</span> <span class="nav-text">Task 1: MalMul with multi-head variant</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-2-MalMul-with-importance"><span class="nav-number">2.</span> <span class="nav-text">Task 2: MalMul with importance</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TODO-1"><span class="nav-number">2.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-3-MalMul-with-grad"><span class="nav-number">3.</span> <span class="nav-text">Task 3: MalMul with grad</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TODO-2"><span class="nav-number">3.1.</span> <span class="nav-text">TODO</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-MalMul-with-multi-head-variant"><span class="nav-number">1.</span> <span class="nav-text">Task 1: MalMul with multi-head variant</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO"><span class="nav-number">1.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-2-MalMul-with-importance"><span class="nav-number">2.</span> <span class="nav-text">Task 2: MalMul with importance</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-1"><span class="nav-number">2.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-3-MalMul-with-grad"><span class="nav-number">3.</span> <span class="nav-text">Task 3: MalMul with grad</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-2"><span class="nav-number">3.1.</span> <span class="nav-text">TODO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -346,7 +360,7 @@
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -434,6 +448,59 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
