@@ -1708,7 +1708,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-06-29 21:51:36" itemprop="dateModified" datetime="2025-06-29T21:51:36+08:00">2025-06-29</time>
+                <time title="修改时间：2025-09-03 00:39:13" itemprop="dateModified" datetime="2025-09-03T00:39:13+08:00">2025-09-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1731,7 +1731,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。</p>
+          <p>本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。注意，作业<strong>通过 github classroom 发布</strong>，创建仓库的链接会在群公告中发布，请注意选择自己的学号加入 classroom，否则会影响成绩统计，如果没有出现你的学号，请联系助教。</p>
 <h1 id="Environment-Setup"><a href="#Environment-Setup" class="headerlink" title="Environment Setup"></a>Environment Setup</h1><h2 id="Option-1-Local-Setup"><a href="#Option-1-Local-Setup" class="headerlink" title="Option 1: Local Setup"></a>Option 1: Local Setup</h2><ul>
 <li><strong>Python</strong>: 3.10 或更高版本  </li>
 <li><strong>Packages</strong>: 推荐通过以下命令安装所有必要的依赖项：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure></li>
@@ -1741,7 +1741,6 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
             <p><strong>注意</strong>：不同作业的 requirements.txt 可能略有差异</p>
           </div>
 <h2 id="Option-2-Docker-Setup"><a href="#Option-2-Docker-Setup" class="headerlink" title="Option 2: Docker Setup"></a>Option 2: Docker Setup</h2><p>强烈建议使用来自 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/index.html">Nvidia PyTorch Release</a> 的 Docker 镜像（例如 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-23-10.html#rel-23-10">23.10</a> 或更新的版本）作为基础环境，以避免依赖冲突。</p>
-<p>TODO: 完善</p>
 <h1 id="Code-and-Debug"><a href="#Code-and-Debug" class="headerlink" title="Code and Debug"></a>Code and Debug</h1><h2 id="Coding"><a href="#Coding" class="headerlink" title="Coding"></a>Coding</h2><p>所有完成 Tasks 所需的文件都位于 <code>src/</code> 目录下，该目录是<strong>唯一</strong>会被作为 Python 模块导入的目录。因此，你需要注意以下几点：</p>
 <ul>
 <li><code>__init__.py</code> 文件对于 Python 模块来说是必不可少的，我们已经在 <code>src/</code> 中为你初始化好了所有必要的 <code>__init__.py</code> 文件，因此如果你出于个人目的需要修改它们，请务必小心。</li>
@@ -1826,8 +1825,8 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
 </ul>
 <h3 id="Deep-Debug-Mode"><a href="#Deep-Debug-Mode" class="headerlink" title="Deep Debug Mode"></a>Deep Debug Mode</h3><ul>
 <li>根据 <code>test_toy.py</code>，我们提供了另一个测试文件 <code>test_with_ref.py</code>，其中会导入一个闭源的参考包 ref（结构与 src 相同，例如 <code>from ref import ...</code>，<code>from ref.modeling import ...</code>）。因此，你可以在基础的 toy 测试之外，自行创建测试用例，并与参考实现进行比较。</li>
-<li>在我们提供的 <code>a&#123;x&#125;_env_v&#123;y&#125;.tar</code>（基于 NGC PyTorch）或 <code>a&#123;x&#125;_env_light_v&#123;y&#125;.tar</code>（基于 Ubuntu）的 Docker 镜像 tar 文件中，已传到到 NJU Box，你可以将任意一个下载到你的环境中使用。</li>
-<li>然后按照下面的示例命令一步一步操作：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># step0. assumming that the tar file &quot;a&#123;x&#125;_env_light_v&#123;y&#125;.tar&quot; is already downloaded into your private repo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># step1. run the given script to load the docker image (default the light one) and execute the container</span></span><br><span class="line">bash run_docker.sh <span class="comment"># or maybe you need run it with sudo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># step2. get into the repo path mounted into the container</span></span><br><span class="line"><span class="built_in">cd</span> a&#123;x&#125;_repo</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3. run the test_with_ref.py</span></span><br><span class="line">pytest test_with_ref.py</span><br></pre></td></tr></table></figure></li>
+<li>我们提供<code>a_env_light_v&#123;y&#125;.tar</code>（基于 Ubuntu）的 Docker 镜像 tar 文件，已传到到 NJU Box（链接会在群公告中展示），你可以下载到你的环境中使用。</li>
+<li>然后按照下面的示例命令一步一步操作：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># step0. assumming that the tar file &quot;a_env_light_v&#123;y&#125;.tar&quot; is already downloaded into your private repo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># step1. run the given script to load the docker image (default the light one) and execute the container</span></span><br><span class="line">bash run_docker.sh <span class="comment"># or maybe you need run it with sudo</span></span><br><span class="line"><span class="comment">#this script assume that your machine has an avaliable nvidia gpu.If not,you should to change the option in it ,and change the fixed device in test_with_ref.py.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># step2. get into the repo path mounted into the container</span></span><br><span class="line"><span class="built_in">cd</span> a&#123;x&#125;_repo</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3. run the test_with_ref.py</span></span><br><span class="line">pytest test_with_ref.py</span><br></pre></td></tr></table></figure></li>
 <li>对于 Windows，如果你已经安装了 Docker，可以从 <code>run_docker.sh</code> 中提取核心的 Docker 命令并自行运行；或者你也可以使用一些技巧，比如 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/wsl/about">WSL</a> 或 <a target="_blank" rel="noopener" href="https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/">DinD</a>，来模拟类 Unix 的环境。</li>
 </ul>
 <div class="note warning">
@@ -1839,7 +1838,7 @@ x_{\frac{d}{2}-1} \vphantom{\cos\left(n\theta^{\frac{d}{2}-1}\right)}
 <li>如果你因为一些特殊问题错过了截止时间，请直接联系老师（见 <a href="#Contact">Contact</a>）。</li>
 </ul>
 <div class="note info">
-            <p>我们会尽可能频繁地对你的中间提交进行预测试，以用于最终提交的评分参考。<br>每次预测试后，我们<strong>只会提供 score feedback</strong>（见 <a href="#Feedback">Feedback</a> 部分），以便你在 <strong>ddl</strong> 之前改进代码，争取更高的分数。</p>
+            <p>我们提供了自动测试服务，但需要你在自己的作业仓库中更改一些设置。</p><!-- 1.<img width="1614" height="755" alt="9c1f681e4a1cd64ebdddcffae0db7937" src="https://github.com/user-attachments/assets/10b56a7c-0770-4cb8-95c2-8799966b8a08" /> --><p>首先：</p><p><img src="first.jpg" style="width: 80%; height: auto;"></p><!-- 2.<img width="1024" height="940" alt="f89c15a89e690bf2dfd8f48aae3682ad" src="https://github.com/user-attachments/assets/85a65574-b0c1-46df-9f57-d279a545f636" /> --><p>然后：</p><p><img src="second.jpg" style="width: 80%; height: auto;"></p><p>按照上图操作，对应的 <strong>url 我们会在群公告中给出</strong>，注意查收。完成该操作后，当你进行 <code>git push</code> 时，我们的测试机器会自动完成测试，并创建 <code>score-feedback</code> 分支返回你的分数，这可能会消耗一定时间，随实验难度不确定，请耐心等待，如果出现问题，请寻求助教的帮助。</p><p>每次测试后，我们<strong>会提供 score feedback</strong>（见 <a href="#Feedback">Feedback</a> 部分），以便你在 <strong>ddl</strong> 之前改进代码，争取更高的分数。</p>
           </div>
 <h1 id="Scoring"><a href="#Scoring" class="headerlink" title="Scoring"></a>Scoring</h1><p>每个作业将根据评分范围 0~100 分进行评定。我们会下载你的代码，并通过运行 <code>test_script.sh</code> 脚本来执行 <code>test_score.py</code> 文件（该文件对你来说是不可见的空文件），在我们的本地机器上导入 Tasks 中指定的文件并运行一些测试用例。</p>
 <ul>
