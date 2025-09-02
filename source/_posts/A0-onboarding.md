@@ -9,7 +9,7 @@ comments: false
 mathjax: true
 ---
 
-本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。注意，作业通过github classroom 发布，创建仓库的链接会在群公告中发布，请注意选择自己的学号加入classroom，否则会影响成绩统计，如果没有出现你的学号，请联系助教。
+本作业旨在帮助你熟悉编程环境、提交流程以及基本的 PyTorch 编程。通过完成它，你将确保开发环境配置正确，理解如何提交未来的作业，并加强 PyTorch 编程技能。注意，作业**通过 github classroom 发布**，创建仓库的链接会在群公告中发布，请注意选择自己的学号加入 classroom，否则会影响成绩统计，如果没有出现你的学号，请联系助教。
 
 # Environment Setup
 
@@ -29,8 +29,6 @@ mathjax: true
 ## Option 2: Docker Setup
 
 强烈建议使用来自 [Nvidia PyTorch Release](https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/index.html) 的 Docker 镜像（例如 [23.10](https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-23-10.html#rel-23-10) 或更新的版本）作为基础环境，以避免依赖冲突。
-
-TODO: 完善
 
 
 # Code and Debug
@@ -246,11 +244,18 @@ pytest test_toy.py
 {% note info %}
 我们提供了自动测试服务，但需要你在自己的作业仓库中更改一些设置。
 
-1.<img width="1614" height="755" alt="9c1f681e4a1cd64ebdddcffae0db7937" src="https://github.com/user-attachments/assets/10b56a7c-0770-4cb8-95c2-8799966b8a08" />
+<!-- 1.<img width="1614" height="755" alt="9c1f681e4a1cd64ebdddcffae0db7937" src="https://github.com/user-attachments/assets/10b56a7c-0770-4cb8-95c2-8799966b8a08" /> -->
+首先：
 
-2.<img width="1024" height="940" alt="f89c15a89e690bf2dfd8f48aae3682ad" src="https://github.com/user-attachments/assets/85a65574-b0c1-46df-9f57-d279a545f636" />
+<img src="first.jpg" style="width: 80%; height: auto;">
 
-3.按照上图操作，对应的url我们会在群公告中给出，注意查收。完成该操作后，当你进行git push时，我们的测试机器会自动完成测试，并创建score-feedback分支返回你的分数，这可能会消耗一定时间，随实验难度不确定，请耐心等待，如果出现问题，请寻求助教的帮助。
+<!-- 2.<img width="1024" height="940" alt="f89c15a89e690bf2dfd8f48aae3682ad" src="https://github.com/user-attachments/assets/85a65574-b0c1-46df-9f57-d279a545f636" /> -->
+
+然后：
+
+<img src="second.jpg" style="width: 80%; height: auto;">
+
+按照上图操作，对应的 **url 我们会在群公告中给出**，注意查收。完成该操作后，当你进行 `git push` 时，我们的测试机器会自动完成测试，并创建 `score-feedback` 分支返回你的分数，这可能会消耗一定时间，随实验难度不确定，请耐心等待，如果出现问题，请寻求助教的帮助。
 
 
 每次测试后，我们**会提供 score feedback**（见 [Feedback](#Feedback) 部分），以便你在 **ddl** 之前改进代码，争取更高的分数。
