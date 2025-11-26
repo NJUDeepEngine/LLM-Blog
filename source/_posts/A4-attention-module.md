@@ -103,7 +103,7 @@ $$
 - **AttnQKVLayout.THD**：最通用的布局格式，也称为 `varlen layout`（变长布局），满足 $\mathbf{Q},\mathbf{K},\mathbf{V} \in \mathbb{R}^{\text{total\_seq\_len} \times \text{num\_head} \times \text{head\_dim}}$，在这种布局中，不存在显式的 `batch` 维度，所有长度不一的序列会沿着 `sequence` 维度拼接在一起，在这种情况下需要额外提供两个辅助输入，用于标识每条序列在拼接后的张量中的位置：
   - `cu_seqlens_q`；
   - `cu_seqlens_kv`；
-  这两个张量都是 `int32` 类型，形状为 `[batch_size + 1]`，其中每一段 `[[cu_seqlens}[i], cu_seqlens[i+1]]` 表示第 i 个样本在 $\mathbf{Q}$ 或 $\mathbf{K}$、$\mathbf{V}$ 中的 起止区间（start-end），在 `varlen layout` 场景的掩码模式可参考下图。（更多示例请参考 Flash Attention 接口中的相关内容。）
+  这两个张量都是 `int32` 类型，形状为 `[batch_size + 1]`，其中每一段 `[[cu_seqlens[i], cu_seqlens[i+1])` 表示第 i 个样本在 $\mathbf{Q}$ 或 $\mathbf{K}$、$\mathbf{V}$ 中的 起止区间（start-end），在 `varlen layout` 场景的掩码模式可参考下图。（更多示例请参考 Flash Attention 接口中的相关内容。）
 
 ![sliding window](window.svg)
 
